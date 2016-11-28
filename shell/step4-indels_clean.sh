@@ -27,9 +27,9 @@ gatk -T IndelRealigner -R ${CF3}/canfam3.fasta -I ${SAMPLE}.bam -targetIntervals
 bam_size=$(wc -c < ${RESULTS}/${SAMPLE}/${SAMPLE}.bam)
 bam_size1=$(wc -c < ${RESULTS}/${SAMPLE}/${SAMPLE}.clean.bam)
 if [ $bam_size1 -ge $(( ${bam_size}/10 )) ]; then
-	echo "Deleting ${RESULTS}/${SAMPLE}/${SAMPLE}.bam"
-	echo "Deleting ${RESULTS}/${SAMPLE}/${SAMPLE}.bai"
+	echo "Deleting ${RESULTS}/${SAMPLE}/${SAMPLE}.ba*"
 	rm -rf ${RESULTS}/${SAMPLE}/${SAMPLE}.bam
+	rm -rf ${RESULTS}/${SAMPLE}/${SAMPLE}.bai
 fi
 
 
@@ -42,7 +42,7 @@ gatk -T PrintReads -nct 6 -R ${CF3}/canfam3.fasta -I ${SAMPLE}.clean.bam -BQSR $
 ### if size of the final bam file >= 10% of clean bam then delete file
 bam_size2=$(wc -c < ${RESULTS}/${SAMPLE}/${SAMPLE}.final.bam)
 if [ $bam_size1 -ge $(( ${bam_size1}/10 )) ]; then
-	echo "Deleting ${RESULTS}/${SAMPLE}/${SAMPLE}.clean.bam"
-	echo "Deleting ${RESULTS}/${SAMPLE}/${SAMPLE}.clean.bai"
+	echo "Deleting ${RESULTS}/${SAMPLE}/${SAMPLE}.clean.ba*"
 	rm -rf ${RESULTS}/${SAMPLE}/${SAMPLE}.clean.bam
+	rm -rf ${RESULTS}/${SAMPLE}/${SAMPLE}.clean.bai
 fi
