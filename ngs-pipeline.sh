@@ -11,7 +11,7 @@ CFG="${SCRIPTS}/ngs-pipeline.config"
 
 mkdir $SAMPLE; cd $SAMPLE
 cp $CFG $SAMPLE.config; source $SAMPLE.config
-mkdir -p ${GENOME}/logs
+mkdir -p ${GENOME}/logs; cd ${GENOME}
 
 jid1=$(sbatch -J ${SAMPLE}.fastq2sam ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
 echo $jid1
