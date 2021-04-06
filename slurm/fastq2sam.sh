@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #! How many (MPI) tasks will there be in total? (<= nodes*32)
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
-#SBATCH --ntasks=12
+#SBATCH --ntasks=16
 #! How much wallclock time will be required?
 #SBATCH --time 12:00:00
 #! What types of email messages do you wish to receive?
@@ -22,12 +22,13 @@
 
 #SBATCH -o logs/job-%j.out
 
-module purge                               # Removes all modules still loaded
-module load rhel7/default-peta4            # REQUIRED - loads the basic environment
+module purge                                # Removes all modules still loaded
+module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load bwa/0.7.12                     # bwa
+module load bwa/0.7.12                      # bwa
+module load samtools/1.10                   # samtools
 
 SAMPLE=$1
 source ${SAMPLE}.config
 
-bwa mem -M -t 12 ${FASTA}/${GENOME}.fasta ${WGS}/${SAMPLE}/${SAMPLE}\_R1.fastq.gz ${WGS}/${SAMPLE}/${SAMPLE}\_R2.fastq.gz > ${SAMPLE}\_aligned.sam
+bwa mem -M -t 16 ${FASTA}/${GENOME}.fasta ${SAMPLE}\_R1.fastq.gz ${SAMPLE}\_R2.fastq.gz | samtools view -1 - > ${SAMPLE}.aligned.bam
