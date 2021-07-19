@@ -25,9 +25,22 @@ jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}
 
 
 
+#if [[ ! -e ${SAMPLE}\_R1.fastq.gz && ! -e ${SAMPLE}\_R2.fastq.gz ]]
+#then 
+#  echo "You need to copy the FASTQ files into ${SAMPLE} directory before running this pipeline."
+#  echo "FASTQ files can be found here - ${WGS}/${SAMPLE}"
+#  echo "\t cp ${WGS}/${SAMPLE}/${SAMPLE}\_R1.fastq.gz ${SAMPLE}"
+#  echo "\t cp ${WGS}/${SAMPLE}/${SAMPLE}\_R2.fastq.gz ${SAMPLE}"
+#  exit 1;
+#fi
+
+mkdir $GENOME; cd $GENOME
 
 # fastq2sam - convert FASTQ to aligned SAM files
-#jid1=$(sbatch -J ${SAMPLE}.fastq2sam ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
+
+
+
 #jid2=$(sbatch -J ${SAMPLE}.sam2bam --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/sam2bam.sh ${SAMPLE} ${RUN_NAME})
 #jid3=$(sbatch -J ${SAMPLE}.validateSam --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/validateSam.sh ${SAMPLE})
 #jid4=$(sbatch -J ${SAMPLE}.markDuplicates --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/markDuplicates.sh ${SAMPLE})
@@ -40,5 +53,3 @@ jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}
 #jid11=$(sbatch -J ${SAMPLE}.FinalStep --dependency=afterok:${jid9##* }:${jid10##* } ${SCRIPTS}/slurm/finalStep.sh ${SAMPLE})
 
 echo $jid1
-
-
