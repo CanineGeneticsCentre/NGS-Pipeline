@@ -12,14 +12,22 @@ CFG="${SCRIPTS}/ngs-pipeline.config"
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 cp $CFG $SAMPLE.config; source $SAMPLE.config
 
-if [[ ! -e ${SAMPLE}_R1.fastq.gz && -e ${SAMPLE}_R2.fastq.gz ]]
-then 
-  cp ${WGS}/${SAMPLE}/${SAMPLE}_R1.fastq.gz ${WGS}/${SAMPLE}/${SAMPLE}_R2.fastq.gz ./
-fi
+# Copy files from RCS... will only copy if files no present or rcs version is newer
+rsync --progress -av ${WGS}/${SAMPLE}/*.fq.gz ./
+
+# Count how many fastq files we have
+COUNT=`ls *.fq.gz | wc -l`
+# Work out number of lanes used... assuming pair-end, therefore divide total number of files by 2 - forward and reverse files for each lane
+LANES=$((COUNT / 2))
+
+# Submit job array to align samples to ref genome
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
+
+
 
 
 # fastq2sam - convert FASTQ to aligned SAM files
-jid1=$(sbatch -J ${SAMPLE}.fastq2sam ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
+#jid1=$(sbatch -J ${SAMPLE}.fastq2sam ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
 #jid2=$(sbatch -J ${SAMPLE}.sam2bam --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/sam2bam.sh ${SAMPLE} ${RUN_NAME})
 #jid3=$(sbatch -J ${SAMPLE}.validateSam --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/validateSam.sh ${SAMPLE})
 #jid4=$(sbatch -J ${SAMPLE}.markDuplicates --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/markDuplicates.sh ${SAMPLE})
@@ -31,4 +39,6 @@ jid1=$(sbatch -J ${SAMPLE}.fastq2sam ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
 #jid10=$(sbatch -J ${SAMPLE}.validateSam2 --dependency=afterok:${jid8##* } ${SCRIPTS}/slurm/validateSam2.sh ${SAMPLE})
 #jid11=$(sbatch -J ${SAMPLE}.FinalStep --dependency=afterok:${jid9##* }:${jid10##* } ${SCRIPTS}/slurm/finalStep.sh ${SAMPLE})
 
-echo $jid2
+echo $jid1
+
+
