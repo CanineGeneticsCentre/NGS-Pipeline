@@ -30,7 +30,7 @@ SAMPLE=$1
 source ../${SAMPLE}.config
 
 
-FILE1=$(ls *s_${SLURM_ARRAY_TASK_ID}.r_1.fq.gz)
-FILE2=$(ls *s_${SLURM_ARRAY_TASK_ID}.r_2.fq.gz)
+FILE1=$(ls ../*s_${SLURM_ARRAY_TASK_ID}.r_1.fq.gz)
+FILE2=$(ls ../*s_${SLURM_ARRAY_TASK_ID}.r_2.fq.gz)
 
 bwa mem -M -t 16 ${FASTA}/${GENOME}.fasta ${FILE1} ${FILE2} | samtools view -1 - > ${SAMPLE}s_${SLURM_ARRAY_TASK_ID}.aligned.bam

@@ -11,18 +11,10 @@ CFG="${SCRIPTS}/ngs-pipeline.config"
 
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 cp $CFG $SAMPLE.config; source $SAMPLE.config
+mkdir $GENOME; 
 
 # Copy files from RCS... will only copy if files no present or rcs version is newer
 rsync --progress -av ${WGS}/${SAMPLE}/*.fq.gz ./
-
-# Count how many fastq files we have
-COUNT=`ls *.fq.gz | wc -l`
-# Work out number of lanes used... assuming pair-end, therefore divide total number of files by 2 - forward and reverse files for each lane
-LANES=$((COUNT / 2))
-
-# Submit job array to align samples to ref genome
-jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
-
 
 
 #if [[ ! -e ${SAMPLE}\_R1.fastq.gz && ! -e ${SAMPLE}\_R2.fastq.gz ]]
@@ -34,10 +26,17 @@ jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}
 #  exit 1;
 #fi
 
-mkdir $GENOME; cd $GENOME
 
-# fastq2sam - convert FASTQ to aligned SAM files
-jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
+
+# Count how many fastq files we have
+COUNT=`ls *.fq.gz | wc -l`
+# Work out number of lanes used... assuming pair-end, therefore divide total number of files by 2 - forward and reverse files for each lane
+LANES=$((COUNT / 2))
+
+cd $GENOME
+# fastq2sam - Submit job array to align samples to ref genome
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
+
 
 
 
