@@ -18,7 +18,7 @@
 #! For 6GB per CPU, set "-p skylake"; for 12GB per CPU, set "-p skylake-himem":
 #SBATCH -p skylake
 
-#SBATCH -o logs/job-%A_%a.out
+#SBATCH -o ../logs/job-%A_%a.out
 
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
@@ -27,7 +27,7 @@ module load bwa/0.7.12                      # bwa
 module load samtools/1.10                   # samtools
 
 SAMPLE=$1
-source ${SAMPLE}.config
+source ../${SAMPLE}.config
 
 
 FILE1=$(ls *s_${SLURM_ARRAY_TASK_ID}.r_1.fq.gz)
