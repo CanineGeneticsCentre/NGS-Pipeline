@@ -23,16 +23,22 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load samtools/1.10                   # samtools
-module load picard/2.9.2                    # picard
+#module load samtools/1.10                   # samtools
+#module load picard/2.9.2                    # picard
+
+module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
+module load gatk/4.1.0.0
+
 
 SAMPLE=$1
 source ../${SAMPLE}.config
 
-export PICARD_JAVA_MEM_MX='12g'
+#export PICARD_JAVA_MEM_MX='12g'
 
-picard_latest AddOrReplaceReadGroups INPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam OUTPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_sorted_rg.bam RGID=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGLB=${SAMPLE} RGPL=${PLATFORM} RGPU=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGSM=${SAMPLE} SORT_ORDER=coordinate CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT
+#picard_latest AddOrReplaceReadGroups INPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam OUTPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_sorted_rg.bam RGID=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGLB=${SAMPLE} RGPL=${PLATFORM} RGPU=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGSM=${SAMPLE} SORT_ORDER=coordinate CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT
 
+
+gatk AddOrReplaceReadGroups --INPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam --OUTPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_sorted_rg.bam --RGLB ${SAMPLE} --RGPL ${PLATFORM} --RGPU ${BARCODE}.${SLURM_ARRAY_TASK_ID} --RGSM ${SAMPLE} --RGID ${BARCODE}.${SLURM_ARRAY_TASK_ID} --TMP_DIR ${HOME}/hpc-work/tmp/
 
 
 
