@@ -26,6 +26,10 @@ module load rhel7/default-peta4             # REQUIRED - loads the basic environ
 module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
 module load gatk/4.1.0.0
 
+SAMPLE=$1
+LANES=$2
+source ../${SAMPLE}.config
+
 INPUT=''
 for i in `seq 1 ${LANES}`; do 
   INPUT+=" --INPUT ${SAMPLE}.s_${i}_aligned_rg.bam"
