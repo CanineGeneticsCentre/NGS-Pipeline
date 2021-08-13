@@ -34,11 +34,12 @@ SAMPLE=$1
 source ../${SAMPLE}.config
 
 #export PICARD_JAVA_MEM_MX='12g'
+#export PICARD_JAVA_TMPDIR="${HOME}/rds/hpc-work/tmp"
 
 #picard_latest AddOrReplaceReadGroups INPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam OUTPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_sorted_rg.bam RGID=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGLB=${SAMPLE} RGPL=${PLATFORM} RGPU=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGSM=${SAMPLE} SORT_ORDER=coordinate CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT
 
 
-gatk AddOrReplaceReadGroups --INPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam --OUTPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_sorted_rg.bam --RGLB ${SAMPLE} --RGPL ${PLATFORM} --RGPU ${BARCODE}.${SLURM_ARRAY_TASK_ID} --RGSM ${SAMPLE} --RGID ${BARCODE}.${SLURM_ARRAY_TASK_ID} --TMP_DIR ${HOME}/hpc-work/tmp/
+gatk AddOrReplaceReadGroups --INPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam --OUTPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_sorted_rg.bam --RGLB ${SAMPLE} --RGPL ${PLATFORM} --RGPU ${BARCODE}.${SLURM_ARRAY_TASK_ID} --RGSM ${SAMPLE} --RGID ${BARCODE}.${SLURM_ARRAY_TASK_ID} --TMP_DIR ${HOME}/hpc-work/tmp/ --VALIDATION_STRINGENCY SILENT
 
 
 
