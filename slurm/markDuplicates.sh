@@ -47,6 +47,14 @@ echo $INPUT
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" MarkDuplicates ${INPUT} --OUTPUT ${SAMPLE}.aligned.unsorted.dedup.bam --METRICS_FILE ${SAMPLE}.dedup.metrics --VALIDATION_STRINGENCY=SILENT --ASSUME_SORT_ORDER "queryname" --TMP_DIR ${HOME}/hpc-work/tmp/
 
+bam_size=$(wc -c < ${SAMPLE}.aligned.unsorted.dedup.bam)
+if [ $bam_size -ge 50000000 ]; then
+  for i in `seq 1 ${LANES}`; do 
+	  rm -rf ${SAMPLE}.s_${i}_aligned_rg.bam
+  done
+fi
+
+
 #  ~{gatk_path} --java-options "-Dsamjdk.compression_level=~{compression_level} -Xms~{command_mem_gb}G" \
 #      MarkDuplicates \
 #      --INPUT ~{sep=' --INPUT ' input_bams} \
