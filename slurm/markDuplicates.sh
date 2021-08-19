@@ -37,6 +37,13 @@ for i in `seq 1 ${LANES}`; do
 done
 echo $INPUT
 
+# NOTES from GATK pipeline...
+# Aggregate aligned flowcell BAM files and mark duplicates
+# We take advantage of the tool's ability to take multiple BAM inputs and write out a single output
+# to avoid having to spend time just merging BAM files.
+
+# The flag Xmx specifies the maximum memory allocation pool for a Java Virtual Machine (JVM),
+# while Xms specifies the initial memory allocation pool.
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" MarkDuplicates ${INPUT} --OUTPUT ${SAMPLE}.aligned.unsorted.dedup.bam --METRICS_FILE ${SAMPLE}.dedup.metrics --VALIDATION_STRINGENCY=SILENT --ASSUME_SORT_ORDER "queryname" --TMP_DIR ${HOME}/hpc-work/tmp/
 
