@@ -34,15 +34,26 @@ COUNT=`ls *.fq.gz | wc -l`
 LANES=$((COUNT / 2))
 
 cd $GENOME
-# fastq2sam - Submit job array to align samples to ref genome
-jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2sam.sh ${SAMPLE})
+
+# generate seqeunce groups for future scatter/gather steps.
+perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
+
+
+# fastq2bam - Submit job array to align samples to ref genome
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2bam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2bam.sh ${SAMPLE})
+
+# addRGinfo - add Read Group information to aligned BAM files
+jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.rg --dependency=afterok:${jid1##* } --array=1-${LANES}  ${SCRIPTS}/slurm/addRGinfo.sh ${SAMPLE})
+
+# mark duplicates
+# We take advantage of the tool's ability to take multiple BAM inputs and write out a single output
+# to avoid having to spend time just merging BAM files.
+jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markDuplicates --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/markDuplicates.sh ${SAMPLE} ${LANES})
 
 
 
-
-#jid2=$(sbatch -J ${SAMPLE}.sam2bam --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/sam2bam.sh ${SAMPLE} ${RUN_NAME})
 #jid3=$(sbatch -J ${SAMPLE}.validateSam --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/validateSam.sh ${SAMPLE})
-#jid4=$(sbatch -J ${SAMPLE}.markDuplicates --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/markDuplicates.sh ${SAMPLE})
+#
 #jid5=$(sbatch -J ${SAMPLE}.realignReads --dependency=afterok:${jid4##* } ${SCRIPTS}/slurm/realignReads.sh ${SAMPLE})
 #jid6=$(sbatch -J ${SAMPLE}.realignIndels --dependency=afterok:${jid5##* } ${SCRIPTS}/slurm/realignIndels.sh ${SAMPLE})
 #jid7=$(sbatch -J ${SAMPLE}.baseRecalibrator --dependency=afterok:${jid6##* } ${SCRIPTS}/slurm/baseRecalibrator.sh ${SAMPLE})
