@@ -13,6 +13,7 @@ CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 cp $CFG $SAMPLE.config; source $SAMPLE.config
 mkdir -p $GENOME; 
+mv $SAMPLE.config $GENOME/
 
 # Copy files from RCS... will only copy if files no present or rcs version is newer
 rsync --progress -av ${WGS}/${SAMPLE}/*.fq.gz ./
