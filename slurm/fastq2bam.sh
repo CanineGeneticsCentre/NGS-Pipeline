@@ -27,7 +27,7 @@ module load bwa/0.7.12                      # bwa
 module load samtools/1.10                   # samtools
 
 SAMPLE=$1
-source ../${SAMPLE}.config
+source ${SAMPLE}.config
 
 
 FILE1=$(ls ../*s_${SLURM_ARRAY_TASK_ID}.r_1.fq.gz)

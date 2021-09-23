@@ -29,7 +29,7 @@ module load gatk/4.1.0.0                    # GATK 4.1
 
 SAMPLE=$1
 LANES=$2
-source ../${SAMPLE}.config
+source ${SAMPLE}.config
 
 INPUT=''
 for i in `seq 1 ${LANES}`; do 

@@ -31,7 +31,7 @@ module load gatk/4.1.0.0
 
 
 SAMPLE=$1
-source ../${SAMPLE}.config
+source ${SAMPLE}.config
 
 #export PICARD_JAVA_MEM_MX='12g'
 #export PICARD_JAVA_TMPDIR="${HOME}/rds/hpc-work/tmp"
