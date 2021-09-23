@@ -51,6 +51,7 @@ jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.rg --dependency=afterok:${jid1##* } --a
 # to avoid having to spend time just merging BAM files.
 jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markDuplicates --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/markDuplicates.sh ${SAMPLE} ${LANES})
 
+jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortSam --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/sortSam.sh ${SAMPLE})
 
 
 #jid3=$(sbatch -J ${SAMPLE}.validateSam --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/validateSam.sh ${SAMPLE})
