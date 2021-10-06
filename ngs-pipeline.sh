@@ -46,7 +46,7 @@ INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2bam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2bam.sh ${SAMPLE})
 
 # addRGinfo - add Read Group information to aligned BAM files
-jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.rg --dependency=afterok:${jid1##* } --array=1-${LANES}  ${SCRIPTS}/slurm/addRGinfo.sh ${SAMPLE})
+jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.rg --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/addRGinfo.sh ${SAMPLE})
 
 # mark duplicates
 # We take advantage of the tool's ability to take multiple BAM inputs and write out a single output
@@ -57,7 +57,7 @@ jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markDuplicates --dependency=afterok:${j
 jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortSam --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/sortSam.sh ${SAMPLE})
 
 # Generate Base Quality Score Recalibration (BQSR) model
-jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid4##* } s${SCRIPTS}/slurm/baseRecalibrator.sh ${SAMPLE})
+jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid4##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/baseRecalibrator.sh ${SAMPLE})
 
 
 
