@@ -39,6 +39,7 @@ cd $GENOME
 
 # generate seqeunce groups for future scatter/gather steps.
 perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
+INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 
 
 # fastq2bam - Submit job array to align samples to ref genome
@@ -54,6 +55,9 @@ jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markDuplicates --dependency=afterok:${j
 
 # Sort BAM file by coordinate order and fix tag values for NM and UQ
 jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortSam --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/sortSam.sh ${SAMPLE})
+
+# Generate Base Quality Score Recalibration (BQSR) model
+jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid4##* } s${SCRIPTS}/slurm/baseRecalibrator.sh ${SAMPLE})
 
 
 
