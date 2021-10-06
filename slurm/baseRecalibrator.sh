@@ -33,4 +33,4 @@ source ${SAMPLE}.config
 
 intervals=`head -${SLURM_ARRAY_TASK_ID} sequence_grouping.txt | tail -${SLURM_ARRAY_TASK_ID} | sed s/"\t"/" -L "/g`
 
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" BaseRecalibrator -R ${FASTA}/${GENOME}.fasta -I ${SAMPLE}.sorted.bam --use-original-qualities -O ${SAMPLE}.recal.grp --known-sites ${BQSR} -L ${intervals} --TMP_DIR ${HOME}/hpc-work/tmp/
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" BaseRecalibrator -R ${FASTA}/${GENOME}.fasta -I ${SAMPLE}.sorted.bam --use-original-qualities -O ${SAMPLE}.recal.grp --known-sites ${BQSR} -L ${intervals}
