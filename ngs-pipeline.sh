@@ -59,6 +59,12 @@ jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortSam --dependency=afterok:${jid3##* 
 # Generate Base Quality Score Recalibration (BQSR) model
 jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid4##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/baseRecalibrator.sh ${SAMPLE})
 
+# Merge the recalibration reports resulting from by-interval recalibration
+jid6=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.gatherBQSR --dependency=afterok:${jid5##* } ${SCRIPTS}/slurm/gatherBSQR.sh ${SAMPLE})
+
+
+
+
 
 
 #jid3=$(sbatch -J ${SAMPLE}.validateSam --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/validateSam.sh ${SAMPLE})
