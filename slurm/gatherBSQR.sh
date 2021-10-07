@@ -9,7 +9,7 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 12:00:00
+#SBATCH --time 00:001:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -30,6 +30,14 @@ module load gatk/4.1.0.0                    # GATK 4.1
 SAMPLE=$1
 source ${SAMPLE}.config
 
-ls -1 ${SAMPLE}*.recal.grp > bsqr_reports.txt
+#ls -1 ${SAMPLE}*.recal_data.csv > bsqr_reports.txt
+REPORTS=""
+for f in `ls ${SAMPLE}.*.bsqr.txt`; do REPORTS+="-I $f "; done
 
-gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBQSRReports -I bsqr_reports.txt -O ${SAMPLE}.recal_data.csv
+
+gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBQSRReports ${REPORTS} -O ${SAMPLE}.bsqr.out
+
+if [ -s "${SAMPLE}.bsqr.out" ]
+then
+	rm -rf ${SAMPLE}.*.bsqr.txt
+fi
