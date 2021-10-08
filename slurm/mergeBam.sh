@@ -34,16 +34,15 @@ source ${SAMPLE}.config
 BAMS=""
 for i in `seq 1 ${INTERVALS}`; do BAMS+="-I ${SAMPLE}.$i.bam "; done
 
+gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O /dev/stdout | gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SortSam --INPUT /dev/stdin  --OUTPUT ${SAMPLE}.bam --SORT_ORDER "coordinate" --TMP_DIR ${HOME}/hpc-work/tmp/ --CREATE_INDEX true --CREATE_MD5_FILE true
 
-gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O ${SAMPLE}.bam --CREATE_INDEX true --CREATE_MD5_FILE true
 
-
-bam_size=$(wc -c < ${SAMPLE}.bam)
-if [ $bam_size -ge 50000000 ];then
-  for i in `seq 1 ${INTERVALS}`; do 
-	  rm -rf ${SAMPLE}.$i.bam
-	  rm -rf ${SAMPLE}.$i.bai
-	  rm -rf ${SAMPLE}.$i.bam.md5
-  done
-  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5
-fi
+#bam_size=$(wc -c < ${SAMPLE}.bam)
+#if [ $bam_size -ge 50000000 ];then
+#  for i in `seq 1 ${INTERVALS}`; do 
+#	  rm -rf ${SAMPLE}.$i.bam
+#	  rm -rf ${SAMPLE}.$i.bai
+#	  rm -rf ${SAMPLE}.$i.bam.md5
+#  done
+#  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5
+#fi
