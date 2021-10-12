@@ -63,6 +63,14 @@ jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid4##* } -
 jid6=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.gatherBQSR --dependency=afterok:${jid5##* } ${SCRIPTS}/slurm/gatherBSQR.sh ${SAMPLE})
 
 
+INTERVALS=`wc -l sequence_grouping_with_unmapped.txt | awk '{print $1}'`
+# Apply the recalibration model by interval
+jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.applyBQSR --dependency=afterok:${jid6##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/applyBSQR.sh ${SAMPLE})
+
+# Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
+jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid7##* } ${SCRIPTS}/slurm/mergeBam.sh ${SAMPLE} ${INTERVALS})
+
+
 
 
 
