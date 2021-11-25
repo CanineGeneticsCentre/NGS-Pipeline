@@ -29,13 +29,14 @@ module load gatk/4.1.0.0                    # GATK 4.1
 
 SAMPLE=$1
 INTERVALS=$2
+REF=$3
 source ${SAMPLE}.config
 
 #ls -1 ${SAMPLE}*.recal_data.csv > bsqr_reports.txt
 BAMS=""
 for i in `seq 1 ${INTERVALS}`; do BAMS+="-I ${SAMPLE}.$i.bam "; done
 
-gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O /dev/stdout | gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SortSam --INPUT /dev/stdin  --OUTPUT ${SAMPLE}.bam --SORT_ORDER "coordinate" --TMP_DIR ${HOME}/hpc-work/tmp/ --CREATE_INDEX true --CREATE_MD5_FILE true
+gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O /dev/stdout | gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SortSam --INPUT /dev/stdin  --OUTPUT ${SAMPLE}-${REF}.bam --SORT_ORDER "coordinate" --TMP_DIR ${HOME}/hpc-work/tmp/ --CREATE_INDEX true --CREATE_MD5_FILE true
 
 #gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O ${SAMPLE}.merged.bam
 

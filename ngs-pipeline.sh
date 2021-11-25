@@ -69,7 +69,7 @@ INTERVALS=`wc -l sequence_grouping_with_unmapped.txt | awk '{print $1}'`
 jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.applyBQSR --dependency=afterok:${jid6##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/applyBSQR.sh ${SAMPLE})
 
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
-jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid7##* } ${SCRIPTS}/slurm/mergeBam.sh ${SAMPLE} ${INTERVALS})
+jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid7##* } ${SCRIPTS}/slurm/mergeBam.sh ${SAMPLE} ${INTERVALS} ${REF})
 
 
 
