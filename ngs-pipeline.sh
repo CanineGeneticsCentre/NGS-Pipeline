@@ -9,6 +9,7 @@ SCRIPTS=`dirname $0`
 CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 
 [[ -z "$SAMPLE" ]] && { echo "ERROR: No SAMPLE provided for this run"; exit 1; }
+[[ -z "$REF" ]] && { echo "ERROR: No REFERENCE provided for this run"; exit 1; }
 
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 cp $CFG $SAMPLE.config; source $SAMPLE.config
