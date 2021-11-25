@@ -9,7 +9,7 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 12:00:00
+#SBATCH --time 04:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -40,12 +40,12 @@ gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFi
 #gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O ${SAMPLE}.merged.bam
 
 
-#bam_size=$(wc -c < ${SAMPLE}.bam)
-#if [ $bam_size -ge 50000000 ];then
-#  for i in `seq 1 ${INTERVALS}`; do 
-#	  rm -rf ${SAMPLE}.$i.bam
-#	  rm -rf ${SAMPLE}.$i.bai
-#	  rm -rf ${SAMPLE}.$i.bam.md5
-#  done
-#  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5
-#fi
+bam_size=$(wc -c < ${SAMPLE}.bam)
+if [ $bam_size -ge 50000000 ];then
+  for i in `seq 1 ${INTERVALS}`; do 
+	  rm -rf ${SAMPLE}.$i.bam
+	  rm -rf ${SAMPLE}.$i.bai
+	  rm -rf ${SAMPLE}.$i.bam.md5
+  done
+  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5
+fi
