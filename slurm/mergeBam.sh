@@ -41,7 +41,7 @@ gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFi
 #gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O ${SAMPLE}.merged.bam
 
 
-bam_size=$(wc -c < ${SAMPLE}.bam)
+bam_size=$(wc -c < ${SAMPLE}-${REF}.bam)
 if [ $bam_size -ge 50000000 ];then
   for i in `seq 1 ${INTERVALS}`; do 
 	  rm -rf ${SAMPLE}.$i.bam
