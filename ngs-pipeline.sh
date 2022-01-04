@@ -76,6 +76,9 @@ jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid7##* } ${
 # Create gvcf files with HaplotypeCaller
 jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid8##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF})
 
+# Merge gVCF files into single gVCF
+jid10=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid9##* } ${SCRIPTS}/slurm/mergeGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})
+
 
 
 
