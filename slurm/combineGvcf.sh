@@ -9,7 +9,7 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 02:00:00
+#SBATCH --time 01:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -38,9 +38,10 @@ for i in `seq 1 ${INTERVALS}`; do GVFS+="--variant ${SAMPLE}-${REF}.$i.gvcf "; d
 
 gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" CombineGVCFs ${GVFS} -R ${FASTA}/${GENOME}.fasta -O ${SAMPLE}-${REF}.g.vcf.gz
 
-#gvcf_size=$(wc -c < ${SAMPLE}-${REF}.gvcf)
-#if [ $gvcf_size -ge 50000000 ];then
-#  for i in `seq 1 ${INTERVALS}`; do 
-#	  rm -rf ${SAMPLE}-${REF}.$i.gvcf
-#  done
-#fi
+gvcf_size=$(wc -c < ${SAMPLE}-${REF}.g.vcf.gz)
+if [ $gvcf_size -ge 50000000 ];then
+  for i in `seq 1 ${INTERVALS}`; do 
+	  rm -rf ${SAMPLE}-${REF}.$i.gvcf
+	  rm -rf ${SAMPLE}-${REF}.$i.gvcf.idx
+  done
+fi
