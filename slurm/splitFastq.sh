@@ -34,9 +34,10 @@ mkdir $DIR
 cd $DIR
 
 #split $f into chunks of approx 5000,000,000 lines
-#zcat ../$FILE | split -l500000000 --additional-suffix=.fq
+zcat ../$FILE | split -l500000000 --additional-suffix=.fq
 
 FQ=`ls | wc -l`
+ls -1 x*.fq > files.list
 sbatch -A ${ACCOUNT} -J renameFastq --array=1-${FQ} ${SCRIPTS}/slurm/renameFastq.sh ${DIR}
 
 cd ../

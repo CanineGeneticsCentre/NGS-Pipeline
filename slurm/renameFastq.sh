@@ -25,7 +25,7 @@ module load rhel7/default-peta4             # REQUIRED - loads the basic environ
 
 
 DIR=$1
-FILE=`ls -1 | head -${SLURM_ARRAY_TASK_ID} | tail -1`
+FILE=`head -${SLURM_ARRAY_TASK_ID} files.list | tail -1`
 
 mv ${FILE} ${DIR}.${SLURM_ARRAY_TASK_ID}.fq
 gzip ${DIR}.${SLURM_ARRAY_TASK_ID}.fq
