@@ -26,7 +26,7 @@ COUNT=`ls *.fq.gz | wc -l`
 LANES=$((COUNT / 2))
 
 if [ $LANES -le 1 ]; then
-  echo "You  need to split the FASTQ files up before running the NGS Pipeline. Please run ${SCRIPTS}/splitFastq-pipeline.sh first."
+  echo ; echo "ERROR - You  need to split the FASTQ files up before running the NGS Pipeline. Please run ${SCRIPTS}/splitFastq-pipeline.sh first."; echo
   exit 1;
 fi
 
