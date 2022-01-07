@@ -25,7 +25,9 @@ module load rhel7/default-peta4             # REQUIRED - loads the basic environ
 
 SAMPLE=$1
 FILE=$2
+
 DIR="${FILE%%.*}"
+SCRIPTS=`dirname $0`
 
 source ${SAMPLE}.config
 
