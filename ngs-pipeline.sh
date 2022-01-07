@@ -15,29 +15,24 @@ date
 
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 cp $CFG $SAMPLE.config; source $SAMPLE.config
-mkdir -p $GENOME; 
-mv $SAMPLE.config $GENOME/
 
 # Copy files from RCS... will only copy if files no present or rcs version is newer
 rsync --progress -av ${WGS}/${SAMPLE}/*.fq.gz ./
-
-
-#if [[ ! -e ${SAMPLE}\_R1.fastq.gz && ! -e ${SAMPLE}\_R2.fastq.gz ]]
-#then 
-#  echo "You need to copy the FASTQ files into ${SAMPLE} directory before running this pipeline."
-#  echo "FASTQ files can be found here - ${WGS}/${SAMPLE}"
-#  echo "\t cp ${WGS}/${SAMPLE}/${SAMPLE}\_R1.fastq.gz ${SAMPLE}"
-#  echo "\t cp ${WGS}/${SAMPLE}/${SAMPLE}\_R2.fastq.gz ${SAMPLE}"
-#  exit 1;
-#fi
-
-
+#rsync --progress -av ${WGS}/${SAMPLE}/*.fastq.gz ./
 
 # Count how many fastq files we have
 COUNT=`ls *.fq.gz | wc -l`
 # Work out number of lanes used... assuming pair-end, therefore divide total number of files by 2 - forward and reverse files for each lane
 LANES=$((COUNT / 2))
 
+if [ $LANES -le 1 ]; then
+  echo "You  need to split the FASTQ files up before running the NGS Pipeline. Please run ${SCRIPTS}/splitFastq-pipeline.sh first."
+  exit 1;
+fi
+
+
+mkdir -p $GENOME; 
+mv $SAMPLE.config $GENOME/
 cd $GENOME
 
 # generate seqeunce groups for future scatter/gather steps.
