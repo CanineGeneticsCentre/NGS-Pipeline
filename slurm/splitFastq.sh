@@ -9,7 +9,7 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=16
 #! How much wallclock time will be required?
-#SBATCH --time 12:00:00
+#SBATCH --time 01:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -35,9 +35,10 @@ cd $DIR
 
 #split $f into chunks of approx 5000,000,000 lines
 zcat ../$FILE | split -l500000000 --additional-suffix=.fq
+rm -rf ../$FILE
 
 FQ=`ls | wc -l`
 ls -1 x*.fq > files.list
-sbatch -A ${ACCOUNT} -J renameFastq --array=1-${FQ} ${SCRIPTS}/slurm/renameFastq.sh ${DIR}
+sbatch -A ${ACCOUNT} -J renameFastq --array=1-${FQ} --export=SAMPLE=${SAMPLE} ${SCRIPTS}/slurm/renameFastq.sh ${DIR} 
 
 cd ../
