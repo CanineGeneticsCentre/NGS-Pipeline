@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch fastq2sam.sh <SAMPLE>>
+#! RUN : sbatch fastq2sam.sh <SAMPLE>
 
 #! sbatch directives begin here ###############################
 #! How many whole nodes should be allocated?
