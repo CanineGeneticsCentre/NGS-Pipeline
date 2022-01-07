@@ -26,8 +26,7 @@ LANES=$((COUNT / 2))
 
 if [ $LANES -le 2 ];then
   echo "Need to split FASTQ files"
-  for f in `ls *.fq.gz *.fastq.gz`; do 
-    echo "sbatch -A ${ACCOUNT} -J splitFastq --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/splitFastq.sh ${SAMPLE} ${f}"
-    #jida=$(sbatch -A ${ACCOUNT} -J splitFastq --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/splitFastq.sh ${SAMPLE} ${f})
+  for f in `ls *.fastq.gz`; do 
+    sbatch -A ${ACCOUNT} -J splitFastq --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/splitFastq.sh ${SAMPLE} ${f}
   done
 fi
