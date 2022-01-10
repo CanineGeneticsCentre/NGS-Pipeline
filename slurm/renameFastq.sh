@@ -32,4 +32,4 @@ FILE=`head -${SLURM_ARRAY_TASK_ID} files.list | tail -1`
 mv ${FILE} ${DIR}_${SLURM_ARRAY_TASK_ID}.fq
 gzip ${DIR}_${SLURM_ARRAY_TASK_ID}.fq
 
-mv ${DIR}_${SLURM_ARRAY_TASK_ID}.fq.gz ${WGS}/${SAMPLE}/
+mv ${DIR}_${SLURM_ARRAY_TASK_ID}.fq.gz ../
