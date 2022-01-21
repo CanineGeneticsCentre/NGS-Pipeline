@@ -29,7 +29,7 @@ source ../${SAMPLE}.config
 DIR=$1
 FILE=`head -${SLURM_ARRAY_TASK_ID} files.list | tail -1`
 
-mv ${FILE} ${DIR}_${SLURM_ARRAY_TASK_ID}.fq
+mv ${FILE} ${DIR}.s_${SLURM_ARRAY_TASK_ID}.fq
 gzip ${DIR}.s_${SLURM_ARRAY_TASK_ID}.fq
 
 mv ${DIR}.s_${SLURM_ARRAY_TASK_ID}.fq.gz ../
