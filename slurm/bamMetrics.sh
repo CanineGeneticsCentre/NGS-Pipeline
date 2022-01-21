@@ -31,12 +31,12 @@ SAMPLE=$1
 REF=$2
 source ${SAMPLE}.config
 
-$BAM_FILE=${SAMPLE}-${REF}.bam
+BAM_FILE=${SAMPLE}-${REF}.bam
 
 
 samtools flagstat ${BAM_FILE} > flagstat.out
-picard CollectWgsMetrics INPUT=${BAM_FILE} O=collect_wgs_metrics.txt REFERENCE_SEQUENCE=${FASTA}/${GENOME}.fasta STOP_AFTER=100000000 VALIDATION_STRINGENCY=LENIENT
-picard CollectInsertSizeMetrics INPUT=${BAM_FILE} O=insert_size_metrics.txt H=insert_size_histogram.pdf VALIDATION_STRINGENCY=LENIENT
+picard_latest CollectWgsMetrics INPUT=${BAM_FILE} O=collect_wgs_metrics.txt REFERENCE_SEQUENCE=${FASTA}/${GENOME}.fasta STOP_AFTER=100000000 VALIDATION_STRINGENCY=LENIENT
+picard_latest CollectInsertSizeMetrics INPUT=${BAM_FILE} O=insert_size_metrics.txt H=insert_size_histogram.pdf VALIDATION_STRINGENCY=LENIENT
 
 echo ${SAMPLE}
 echo "..."
@@ -48,5 +48,5 @@ echo "..."
 head -8 collect_wgs_metrics.txt | tail -2 | cut -f 2,3,13-18
 echo "..."
 
-head -8 insert_size_metrics.txt | tail -2 | cut -f 5,7
+head -8 insert_size_metrics.txt | tail -2 | cut -f 6,8
 echo "..."
