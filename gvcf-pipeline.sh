@@ -25,7 +25,7 @@ rsync --progress -av ${WGS}/${SAMPLE}/${SAMPLE}-${REF}.ba* ./
 
 # generate seqeunce groups for future scatter/gather steps.
 perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
-INTERVALS=`wc -l sequence_grouping_with_unmapped.txt | awk '{print $1}'`
+INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 
 # Create gvcf files with HaplotypeCaller
 jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF})
