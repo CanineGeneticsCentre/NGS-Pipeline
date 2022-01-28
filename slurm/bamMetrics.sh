@@ -45,7 +45,7 @@ grep 'in total' flagstat.out
 grep '%' flagstat.out | grep -v 'singleton'
 echo "..."
 
-head -8 collect_wgs_metrics.txt | tail -2 | cut -f 2,3,13-18
+head -8 collect_wgs_metrics.txt | tail -2 | cut -f 2,3,15,16,18,20-22
 echo "..."
 
 head -8 insert_size_metrics.txt | tail -2 | cut -f 6,8
