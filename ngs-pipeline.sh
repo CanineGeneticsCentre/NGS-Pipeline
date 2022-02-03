@@ -93,4 +93,6 @@ jid11=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.metrics --dependency=afterok:${jid8##*
 #jid10=$(sbatch -J ${SAMPLE}.validateSam2 --dependency=afterok:${jid8##* } ${SCRIPTS}/slurm/validateSam2.sh ${SAMPLE})
 #jid11=$(sbatch -J ${SAMPLE}.FinalStep --dependency=afterok:${jid9##* }:${jid10##* } ${SCRIPTS}/slurm/finalStep.sh ${SAMPLE})
 
-echo $jid1
+echo "BAM file = job-${jid8}"
+echo "gVCF file = job-${jid10}"
+echo "Metrics = job-${jid11}"
