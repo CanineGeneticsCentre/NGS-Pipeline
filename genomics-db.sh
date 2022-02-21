@@ -11,14 +11,13 @@ CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 [[ -z "$SAMPLE_LIST" ]] && { echo "ERROR: No list of SAMPLES provided for this run"; exit 1; }
 [[ -z "$REF" ]] && { echo "ERROR: No REFERENCE provided for this run"; exit 1; }
 
-date
-DIR=`echo $RANDOM | md5sum | head -c 10`
+DIR='67c7afff2f'; cd $DIR
 
-echo "Creating directory ${DIR}"
-mkdir -p $DIR/logs; cd $DIR
-mv ../${SAMPLE_LIST} .
-
-cp $CFG ${REF}.config; source ${REF}.config
+#DIR=`echo $RANDOM | md5sum | head -c 10`
+#echo "Creating directory ${DIR}"
+#mkdir -p $DIR/logs; cd $DIR
+#mv ../${SAMPLE_LIST} .
+#cp $CFG ${REF}.config; source ${REF}.config
 
 
 for s in `cat ${SAMPLE_LIST}`; do
@@ -28,5 +27,5 @@ done
 
 INTERVALS=`wc -l ${FASTA}/genomicsDB.intervals | awk '{print $1}'`
 
-jid1=$(sbatch -A ${ACCOUNT} -J GenomicsDB --array=1-${INTERVALS} ${SCRIPTS}/slurm/gvcf2GenomicsDB.sh ${SAMPLES} ${REF})
+echo sbatch -A ${ACCOUNT} -J GenomicsDB --array=1-${INTERVALS} ${SCRIPTS}/slurm/gvcf2GenomicsDB.sh ${SAMPLE_LIST} ${REF}
 
