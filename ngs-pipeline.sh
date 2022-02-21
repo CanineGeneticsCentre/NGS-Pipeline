@@ -39,12 +39,13 @@ cd $GENOME
 perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
 INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 
+BARCODE=`ls *.fq.gz | head -1 | xargs -n 1 zcat 2>/dev/null | head -1 | cut -d':' -f 1-3`
 
 # fastq2bam - Submit job array to align samples to ref genome
 jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2bam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2bam.sh ${SAMPLE})
 
 # addRGinfo - add Read Group information to aligned BAM files
-jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.rg --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/addRGinfo.sh ${SAMPLE})
+jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.rg --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/addRGinfo.sh ${SAMPLE} ${BARCODE})
 
 # mark duplicates
 # We take advantage of the tool's ability to take multiple BAM inputs and write out a single output

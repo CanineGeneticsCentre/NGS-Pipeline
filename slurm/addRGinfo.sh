@@ -31,6 +31,7 @@ module load gatk/4.1.0.0
 
 
 SAMPLE=$1
+BARCODE=$2
 source ${SAMPLE}.config
 
 #export PICARD_JAVA_MEM_MX='12g'
