@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch sam2bam.sh <SAMPLE>>
+#! RUN : sbatch sam2bam.sh <SAMPLE>
 
 #! sbatch directives begin here ###############################
 #! How many whole nodes should be allocated?
