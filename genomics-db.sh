@@ -8,7 +8,7 @@ REF=$2
 SCRIPTS=`dirname $0`
 CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 
-[[ -z "$SAMPLEs" ]] && { echo "ERROR: No list of SAMPLES provided for this run"; exit 1; }
+[[ -z "$SAMPLE_LIST" ]] && { echo "ERROR: No list of SAMPLES provided for this run"; exit 1; }
 [[ -z "$REF" ]] && { echo "ERROR: No REFERENCE provided for this run"; exit 1; }
 
 date
