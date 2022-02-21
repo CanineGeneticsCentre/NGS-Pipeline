@@ -11,7 +11,7 @@ CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 [[ -z "$SAMPLE_LIST" ]] && { echo "ERROR: No list of SAMPLES provided for this run"; exit 1; }
 [[ -z "$REF" ]] && { echo "ERROR: No REFERENCE provided for this run"; exit 1; }
 
-DIR='67c7afff2f'; cd $DIR
+DIR='67c7afff2f'; cd $DIR; source ${REF}.config
 
 #DIR=`echo $RANDOM | md5sum | head -c 10`
 #echo "Creating directory ${DIR}"
