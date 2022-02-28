@@ -16,8 +16,8 @@
 #! interrupted by node failure or system downtime):
 ##SBATCH --no-requeue
 #! For 6GB per CPU, set "-p skylake"; for 12GB per CPU, set "-p skylake-himem":
-#SBATCH -p skylake
-#SBATCH --mem=5gb
+#SBATCH -p skylake-himem
+#SBATCH --mem=10gb
 
 #SBATCH -o logs/job-%A_%a.out
 
@@ -46,7 +46,7 @@ for s in `cat ${SAMPLE_LIST}`; do GVCFs+="-V ${s}-${REF}.g.vcf.gz "; done
 
 rm -rf ${GDB}/${GENOME}/${CHR}
 
-gatk GenomicsDBImport \
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GenomicsDBImport \
     ${GVCFs} \
     --tmp-dir=${HOME}/hpc-work/tmp/ \
     --genomicsdb-workspace-path ${GDB}/${GENOME}/${CHR} \
