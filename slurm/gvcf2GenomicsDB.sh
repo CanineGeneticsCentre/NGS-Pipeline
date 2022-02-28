@@ -46,7 +46,7 @@ for s in `cat ${SAMPLE_LIST}`; do GVCFs+="-V ${s}-${REF}.g.vcf.gz "; done
 
 rm -rf ${GDB}/${GENOME}/${CHR}
 
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GenomicsDBImport \
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenomicsDBImport \
     ${GVCFs} \
     --tmp-dir=${HOME}/hpc-work/tmp/ \
     --genomicsdb-workspace-path ${GDB}/${GENOME}/${CHR} \
