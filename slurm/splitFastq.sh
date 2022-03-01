@@ -35,10 +35,14 @@ cd $DIR
 
 #split $f into chunks of approx 5000,000,000 lines
 zcat ../$FILE | split -l500000000 --additional-suffix=.fq
-rm -rf ../$FILE
+#rm -rf ../$FILE
 
-FQ=`ls | wc -l`
 ls -1 x*.fq > files.list
+FQ=`wc -l files.list | cut -f1 -d ' '`
+
+cat files.list
+
+echo sbatch -A ${ACCOUNT} -J renameFastq --array=1-${FQ} --export=SAMPLE=${SAMPLE} ${SCRIPTS}/slurm/renameFastq.sh ${DIR}
 sbatch -A ${ACCOUNT} -J renameFastq --array=1-${FQ} --export=SAMPLE=${SAMPLE} ${SCRIPTS}/slurm/renameFastq.sh ${DIR} 
 
 cd ../
