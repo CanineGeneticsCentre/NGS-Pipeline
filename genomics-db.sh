@@ -5,6 +5,7 @@
 
 SAMPLE_LIST=$1
 REF=$2
+CHR=$3
 SCRIPTS=`dirname $0`
 CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 
@@ -25,7 +26,13 @@ for s in `cat ${SAMPLE_LIST}`; do
   rsync --progress -av ${WGS}/${s}/${s}-${REF}.g.vcf* ./;
 done
 
-INTERVALS=`wc -l ${FASTA}/genomicsDB.intervals | awk '{print $1}'`
+if [ -z "$CHR" ]; then
+  INTERVALS=`wc -l ${FASTA}/genomicsDB.intervals | awk '{print $1}'`
+  ARRAY="1-${INTERVALS}"
+else
+  ARRAY="${CHR}-${CHR}"
+fi
 
-echo sbatch -A ${ACCOUNT} -J GenomicsDB --array=1-${INTERVALS} ${SCRIPTS}/slurm/gvcf2GenomicsDB.sh ${SAMPLE_LIST} ${REF}
+echo sbatch -A ${ACCOUNT} -J GenomicsDB --array=${ARRAY} ${SCRIPTS}/slurm/gvcf2GenomicsDB.sh ${SAMPLE_LIST} ${REF}
+sbatch -A ${ACCOUNT} -J GenomicsDB --array=${ARRAY} ${SCRIPTS}/slurm/gvcf2GenomicsDB.sh ${SAMPLE_LIST} ${REF}
 
