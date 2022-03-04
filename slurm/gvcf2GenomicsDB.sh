@@ -7,9 +7,9 @@
 #SBATCH --nodes=1
 #! How many (MPI) tasks will there be in total? (<= nodes*32)
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
-#SBATCH --ntasks=1
+#SBATCH --ntasks=8
 #! How much wallclock time will be required?
-#SBATCH --time 06:00:00
+#SBATCH --time 12:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=FAIL,INVALID_DEPEND
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -52,3 +52,5 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenomicsDBI
     --genomicsdb-workspace-path ${GDB}/${GENOME}/${CHR} \
     -L ${INTERVALS} \
     --overwrite-existing-genomicsdb-workspace
+    --batch-size 50
+    --reader-threads 8
