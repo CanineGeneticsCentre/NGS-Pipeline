@@ -9,9 +9,9 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 06:00:00
+#SBATCH --time 12:00:00
 #! What types of email messages do you wish to receive?
-#SBATCH --mail-type=FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL,INVALID_DEPEND,END
 #! Uncomment this to prevent the job from being requeued (e.g. if
 #! interrupted by node failure or system downtime):
 ##SBATCH --no-requeue
