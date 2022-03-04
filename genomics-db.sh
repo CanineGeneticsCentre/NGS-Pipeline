@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-#! RUN : bash genomics-db.sh <SAMPLE> <REF>
-#! Eg. : bash genomics-db.sh sanples.list cf4
+#! RUN : bash genomics-db.sh <SAMPLE> <REF> [<CHR>]
+#! Eg. : bash genomics-db.sh sanples.list cf4 [38]
 
 SAMPLE_LIST=$1
 REF=$2
