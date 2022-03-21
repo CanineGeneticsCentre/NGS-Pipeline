@@ -43,7 +43,7 @@ fi
 
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVCFs \
-    -R ${FASTA} \
+    -R ${FASTA}/${GENOME}.fasta \
     --tmp-dir=${HOME}/hpc-work/tmp/ \
     -V gendb://${GDB}/${GENOME}/${CHR} \
     -O ${REF}-${CHR}.vcf.gz
