@@ -25,8 +25,9 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
-module load gatk/4.1.0.0
+#module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
+#module load gatk/4.1.0.0
+module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
 SAMPLE_LIST=$1
 REF=$2
