@@ -7,9 +7,9 @@
 #SBATCH --nodes=1
 #! How many (MPI) tasks will there be in total? (<= nodes*32)
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
-#SBATCH --ntasks=8
+#SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 12:00:00
+#SBATCH --time 04:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=FAIL,INVALID_DEPEND,END
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -34,8 +34,9 @@ REF=$2
 source ${REF}.config
 
 
-INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
-CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1`
+#INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
+INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/test-gdb.intervals | tail -1 | sed s/" "/" -L "/g`
+CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1 | cut -f 1 -d':'`
 
 if [[ ${#CHR} -lt 4 ]] ; then
   CHR="chr"${CHR}
@@ -44,13 +45,14 @@ fi
 
 GVCFs=""
 for s in `cat ${SAMPLE_LIST}`; do GVCFs+="-V ${s}-${REF}.g.vcf.gz "; done
+#for s in `cat ${SAMPLE_LIST}`; do GVCFs+="-V ${CHR}.${REF}-${s}.g.vcf.gz "; done
 
-rm -rf ${GDB}/${GENOME}/${CHR}
+rm -rf ${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID}
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenomicsDBImport \
     ${GVCFs} \
-    --tmp-dir=${HOME}/hpc-work/tmp/ \
-    --genomicsdb-workspace-path ${GDB}/${GENOME}/${CHR} \
+    --tmp-dir ${HOME}/hpc-work/tmp/ \
+    --genomicsdb-workspace-path ${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
     -L ${INTERVALS} 
 #    --overwrite-existing-genomicsdb-workspace
 #    --batch-size 50

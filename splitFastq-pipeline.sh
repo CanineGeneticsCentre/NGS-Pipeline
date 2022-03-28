@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 
-#! RUN : bash ngs-pipeline.sh <SAMPLE> <REF>
-#! Eg. : bash ngs-pipeline.sh CS_35365 cf4
+#! RUN : bash ngs-pipeline.sh <SAMPLE> 
+#! Eg. : bash ngs-pipeline.sh CS_35365
 
 SAMPLE=$1
-REF=$2
 SCRIPTS=`dirname $0`
-CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
+CFG="${SCRIPTS}/ngs-pipeline-cf3.config"
 
 [[ -z "$SAMPLE" ]] && { echo "ERROR: No SAMPLE provided for this run"; exit 1; }
-[[ -z "$REF" ]] && { echo "ERROR: No REFERENCE provided for this run"; exit 1; }
 
 date
 

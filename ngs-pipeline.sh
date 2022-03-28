@@ -70,12 +70,12 @@ jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.applyBQSR --dependency=afterok:${jid6##
 jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid7##* } ${SCRIPTS}/slurm/mergeBam.sh ${SAMPLE} ${INTERVALS} ${REF})
 
 
-INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
+#INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 # Create gvcf files with HaplotypeCaller
-jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid8##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF})
+#jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid8##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF})
 
 # Merge gVCF files into single gVCF
-jid10=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid9##* } ${SCRIPTS}/slurm/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})
+#jid10=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid9##* } ${SCRIPTS}/slurm/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})
 
 
 
