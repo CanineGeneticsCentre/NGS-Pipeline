@@ -20,6 +20,20 @@ mv $SAMPLE.config $GENOME/
 
 cd $GENOME
 
+#PCR_FREE=false;
+PCR_MODEL='CONSERVATIVE';
+
+printf "Is the data PCR free?\n"
+printf "\t1. No [default]\n"
+printf "\t2. Yes\n"
+# Assign input value into a variable
+read answer
+
+if [[ -v $answer && $answer == "2" ]]; then
+    #PCR_FREE=true;
+    PCR_MODEL='NONE';
+fi
+
 # Copy BAM/BAI files from RCS... will only copy if files no present or rcs version is newer
 rsync --progress -av ${WGS}/${SAMPLE}/${SAMPLE}-${REF}.ba* ./
 
@@ -28,7 +42,7 @@ perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
 INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 
 # Create gvcf files with HaplotypeCaller
-jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF})
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
 
 # Merge gVCF files into single gVCF
 jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})

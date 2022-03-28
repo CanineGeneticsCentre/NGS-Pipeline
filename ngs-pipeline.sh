@@ -16,6 +16,20 @@ date
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 cp $CFG $SAMPLE.config; source $SAMPLE.config
 
+#PCR_FREE=false;
+PCR_MODEL='CONSERVATIVE';
+
+printf "Is the data PCR free?\n"
+printf "\t1. No [default]\n"
+printf "\t2. Yes\n"
+# Assign input value into a variable
+read answer
+
+if [[ -v $answer && $answer == "2" ]]; then
+    #PCR_FREE=true;
+    PCR_MODEL='NONE';
+fi
+
 # Copy files from RCS... will only copy if files no present or rcs version is newer
 rsync --progress -av ${WGS}/${SAMPLE}/*.fq.gz ./
 #rsync --progress -av ${WGS}/${SAMPLE}/*.fastq.gz ./
@@ -72,7 +86,7 @@ jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid7##* } ${
 
 INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 # Create gvcf files with HaplotypeCaller
-jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid8##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF})
+jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid8##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
 
 # Merge gVCF files into single gVCF
 jid10=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid9##* } ${SCRIPTS}/slurm/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})
