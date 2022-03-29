@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-#! RUN : bash genomics-db.sh <SAMPLE> <REF> [<CHR>]
-#! Eg. : bash genomics-db.sh sanples.list cf4 [38]
+#! RUN : bash make-genomics-db.sh <SAMPLE> <REF> [<CHR>]
+#! Eg. : bash make-genomics-db.sh samples.list cf4 [38]
 
 SAMPLE_LIST=$1
 REF=$2
@@ -26,12 +26,18 @@ for s in `cat ${SAMPLE_LIST}`; do
   rsync --progress -av ${WGS}/${s}/${s}-${REF}.g.vcf* ./;
 done
 
+
+# If chromosome is NOT set then use all lines in intervals list to scatter the update job
 if [ -z "$CHR" ]; then
-  INTERVALS=`wc -l ${FASTA}/genomicsDB.intervals | awk '{print $1}'`
+  INTERVALS=`wc -l ${FASTA}/${REF}-genomicsDB.intervals | awk '{print $1}'`
   ARRAY="1-${INTERVALS}"
 else
-  ARRAY="${CHR}-${CHR}"
+  MIN=`grep -n "^$CHR:" $FASTA/${REF}-genomicsDB.intervals | awk  -F':' ' { print $1 } ' | head -1`
+  MAX=`grep -n "^$CHR:" $FASTA/${REF}-genomicsDB.intervals | awk  -F':' ' { print $1 } ' | tail -1`
+  ARRAY="${MIN}-${MAX}"
 fi
+
+
 
 echo sbatch -A ${ACCOUNT} -J GenomicsDB --array=${ARRAY} ${SCRIPTS}/slurm/createGenomicsDB.sh ${SAMPLE_LIST} ${REF}
 sbatch -A ${ACCOUNT} -J GenomicsDB --array=${ARRAY} ${SCRIPTS}/slurm/createGenomicsDB.sh ${SAMPLE_LIST} ${REF}
