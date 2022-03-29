@@ -42,6 +42,7 @@ if [[ ${#CHR} -lt 4 ]] ; then
   CHR="chr"${CHR}
 fi
 
+INTERVALS=`echo $INTERVALS | sed s/"Un -L "/""/g`
 
 GVCFs=""
 for s in `cat ${SAMPLE_LIST}`; do GVCFs+="-V ${s}-${REF}.g.vcf.gz "; done
