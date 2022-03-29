@@ -29,11 +29,11 @@ done
 
 # If chromosome is NOT set then use all lines in intervals list to scatter the update job
 if [ -z "$CHR" ]; then
-  INTERVALS=`wc -l ${FASTA}/test-gdb.intervals | awk '{print $1}'`
+  INTERVALS=`wc -l ${FASTA}/${REF}-genomicsDB.intervals | awk '{print $1}'`
   ARRAY="1-${INTERVALS}"
 else
-  MIN=`grep -n "^$CHR:" $FASTA/test-gdb.intervals | awk  -F':' ' { print $1 } ' | head -1`
-  MAX=`grep -n "^$CHR:" $FASTA/test-gdb.intervals | awk  -F':' ' { print $1 } ' | tail -1`
+  MIN=`grep -n "^$CHR:" $FASTA/${REF}-genomicsDB.intervals | awk  -F':' ' { print $1 } ' | head -1`
+  MAX=`grep -n "^$CHR:" $FASTA/${REF}-genomicsDB.intervals | awk  -F':' ' { print $1 } ' | tail -1`
   ARRAY="${MIN}-${MAX}"
 fi
 

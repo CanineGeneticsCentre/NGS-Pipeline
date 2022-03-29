@@ -33,7 +33,7 @@ source ${REF}.config
 
 
 #INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
-INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/test-gdb.intervals | tail -1 | sed s/" "/" -L "/g`
+INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/${REF}-genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
 CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1 | cut -f 1 -d':'`
 
 if [[ ${#CHR} -lt 4 ]] ; then
