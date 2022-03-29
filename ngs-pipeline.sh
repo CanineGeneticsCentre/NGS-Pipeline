@@ -25,7 +25,7 @@ printf "\t2. Yes\n"
 # Assign input value into a variable
 read answer
 
-if [[ -v $answer && $answer == "2" ]]; then
+if [[ -n $answer && $answer == "2" ]]; then
     #PCR_FREE=true;
     PCR_MODEL='NONE';
 fi
