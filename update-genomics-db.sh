@@ -13,11 +13,11 @@ CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 [[ -z "$REF" ]] && { echo "ERROR: No REFERENCE provided for this run"; exit 1; }
 
 #DIR='67c7afff2f'; cd $DIR; source ${REF}.config
-
-DIR=`echo $RANDOM | md5sum | head -c 10`
+#DIR=`echo $RANDOM | md5sum | head -c 10`
+DIR=$(basename $SAMPLE_LIST .list)
 echo "Creating directory ${DIR}"
 mkdir -p $DIR/logs; cd $DIR
-mv ../${SAMPLE_LIST} .
+cp ../${SAMPLE_LIST} .
 cp $CFG ${REF}.config; source ${REF}.config
 
 
