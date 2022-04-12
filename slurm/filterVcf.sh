@@ -28,8 +28,11 @@ module load rhel7/default-peta4             # REQUIRED - loads the basic environ
 module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
 REF=$1
-ID=$2
+CHR=$2
+ID=$3
 source ${REF}.config
+
+SCRIPTS=`dirname $0`
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
     -R ${FASTA}/${GENOME}.fasta \
