@@ -32,9 +32,9 @@ jid=$(sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} --export=SCRIPTS=${SCR
 
 if [ -z "$CHR" ]; then
   for chr in `cut -f 1 -d':' ${FASTA}/${REF}-genomicsDB.intervals | cut -f 1 -d' ' | cut -d'_' -f 1 | sort -n | uniq`; do
-    sbatch -A ${ACCOUNT} -J ${REF}-$chr.snpEff --dependency=afterok:${jid1##* } --export=SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/annotateVcf.sh $chr;
+    sbatch -A ${ACCOUNT} -J ${REF}-$chr.snpEff --dependency=afterok:${jid##* } --export=SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/annotateVcf.sh $chr;
   done;
 else
-  sbatch -A ${ACCOUNT} -J ${REF}-${CHR}.snpEff --dependency=afterok:${jid1##* } --export=SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/annotateVcf.sh $CHR;
+  sbatch -A ${ACCOUNT} -J ${REF}-${CHR}.snpEff --dependency=afterok:${jid##* } --export=SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/annotateVcf.sh $CHR;
 fi
 
