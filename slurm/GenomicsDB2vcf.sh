@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch gvcf2GenomicsDB.sh <REF>
+#! RUN : sbatch gvcf2GenomicsDB.sh
 
 #! sbatch directives begin here ###############################
 #! How many whole nodes should be allocated?
@@ -27,7 +27,6 @@ module load rhel7/default-peta4             # REQUIRED - loads the basic environ
 
 module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
-REF=$1
 source ${REF}.config
 
 INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/${REF}-genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
@@ -45,7 +44,20 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVC
     -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
 
-jid1=$(sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} ${SCRIPTS}/slurm/filterVcf.sh ${SLURM_ARRAY_TASK_ID})
-echo $jid1
-jid2=$(sbatch -A ${ACCOUNT} -J snpEff.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/annotateVcf.sh ${SLURM_ARRAY_TASK_ID})
-echo $jid2
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
+    -R ${FASTA}/${GENOME}.fasta \
+    -V ${CHR}/${REF}-${CHR}-${ID}.vcf.gz \
+    --filter-expression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0 || SOR > 3.0 || QUAL < 30" \
+    --filter-name "basic" \
+    -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.filtered.vcf.gz
+
+rm -rf ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz.tbi
+
+
+
+
+
+#jid1=$(sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} ${SCRIPTS}/slurm/filterVcf.sh ${SLURM_ARRAY_TASK_ID})
+#echo $jid1
+#jid2=$(sbatch -A ${ACCOUNT} -J snpEff.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/annotateVcf.sh ${SLURM_ARRAY_TASK_ID})
+#echo $jid2

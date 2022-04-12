@@ -25,13 +25,25 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-ID=$1
+module load bcftools-1.9-gcc-5.4.0-b2hdt5n
+module load tabix-2013-12-16-gcc-5.4.0-xn3xiv7
+
+CHR=$1
 source ${REF}.config
 
-echo /rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff -v -csvStats snpEff/${REF}-${CHR}-${ID}.csv -noStats ${SNPEFF} ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.final.vcf
-/rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff \
-    -v -csvStats snpEff/${REF}-${CHR}-${ID}.csv -noStats \
-    ${SNPEFF} \
-    ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.ann.vcf
+if [[ ${#CHR} -lt 4 ]] ; then
+  CHR="chr"${CHR}
+fi
 
-#rm -rf ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz.tbi
+ls -1 ${CHR}/*.filtered.vcf.gz > ${CHR}.list
+
+bcftools concat -f ${CHR}.list > ${REF}-${CHR}.vcf
+
+/rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff \
+    -v -csvStats snpEff/${REF}-${CHR}.csv \
+    -stats snpEff/${REF}-${CHR}.html \
+    ${SNPEFF} \
+    ${REF}-${CHR}.vcf | bgzip -c > ${REF}-${CHR}.ann.vcf.gz
+
+rm -rf ${REF}-${CHR}.vcf
+tabix -p vcf ${REF}-${CHR}.ann.vcf.gz

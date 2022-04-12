@@ -26,6 +26,15 @@ else
   ARRAY="${MIN}-${MAX}"
 fi
 
-echo sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/GenomicsDB2vcf.sh ${REF}
-sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/GenomicsDB2vcf.sh ${REF}
+#echo sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/GenomicsDB2vcf.sh ${REF}
+jid=$(sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} --export=SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/GenomicsDB2vcf.sh)
+
+
+if [ -z "$CHR" ]; then
+  for chr in `cut -f 1 -d':' ${FASTA}/${REF}-genomicsDB.intervals | cut -f 1 -d' ' | cut -d'_' -f 1 | sort -n | uniq`; do
+    sbatch -A ${ACCOUNT} -J ${REF}-$chr.snpEff --dependency=afterok:${jid1##* } --export=SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/annotateVcf.sh $chr;
+  }
+else
+  sbatch -A ${ACCOUNT} -J ${REF}-${CHR}.snpEff --dependency=afterok:${jid1##* } --export=SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/annotateVcf.sh $CHR;
+fi
 
