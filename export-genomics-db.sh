@@ -25,6 +25,6 @@ else
   ARRAY="${MIN}-${MAX}"
 fi
 
-echo sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} ${SCRIPTS}/slurm/GenomicsDB2vcf.sh ${REF}
-sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} ${SCRIPTS}/slurm/updateGenomicsDB.sh ${REF}
+echo sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/GenomicsDB2vcf.sh ${REF}
+sbatch -A ${ACCOUNT} -J ${REF}.VCF --array=${ARRAY} --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/GenomicsDB2vcf.sh ${REF}
 

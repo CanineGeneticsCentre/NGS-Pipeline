@@ -32,8 +32,6 @@ CHR=$2
 ID=$3
 source ${REF}.config
 
-SCRIPTS=`dirname $0`
-
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
     -R ${FASTA}/${GENOME}.fasta \
     -V ${CHR}/${REF}-${CHR}-${ID}.vcf.gz \
@@ -41,6 +39,4 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFilt
     --filter-name "basic" \
     -O ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz
 
-rm -rf ${CHR}/${REF}-${CHR}-${ID}.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.vcf.gz.tbi
-
-sbatch -A ${ACCOUNT} -J snpEff.${ID} ${SCRIPTS}/slurm/annotateVcf.sh ${REF} ${ID}
+#rm -rf ${CHR}/${REF}-${CHR}-${ID}.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.vcf.gz.tbi

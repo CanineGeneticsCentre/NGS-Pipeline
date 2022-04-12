@@ -30,8 +30,6 @@ module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 REF=$1
 source ${REF}.config
 
-SCRIPTS=`dirname $0`
-
 INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/${REF}-genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
 CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1 | cut -f 1 -d':'`
 
@@ -47,4 +45,7 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVC
     -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
 
-sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} ${SCRIPTS}/slurm/filterVcf.sh ${REF} ${CHR} ${SLURM_ARRAY_TASK_ID}
+jid1=$(sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/filterVcf.sh ${REF} ${CHR} ${SLURM_ARRAY_TASK_ID})
+echo $jid1
+jid2=$(sbatch -A ${ACCOUNT} -J snpEff.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS} --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/annotateVcf.sh ${REF} ${SLURM_ARRAY_TASK_ID})
+echo $jid2
