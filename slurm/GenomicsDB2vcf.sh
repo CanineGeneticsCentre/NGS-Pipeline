@@ -45,7 +45,7 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVC
     -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
 
-jid1=$(sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/filterVcf.sh ${REF} ${CHR} ${SLURM_ARRAY_TASK_ID})
+jid1=$(sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} ${SCRIPTS}/slurm/filterVcf.sh ${SLURM_ARRAY_TASK_ID})
 echo $jid1
-jid2=$(sbatch -A ${ACCOUNT} -J snpEff.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS} --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/annotateVcf.sh ${REF} ${SLURM_ARRAY_TASK_ID})
+jid2=$(sbatch -A ${ACCOUNT} -J snpEff.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/annotateVcf.sh ${SLURM_ARRAY_TASK_ID})
 echo $jid2
