@@ -40,4 +40,4 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFilt
 
 rm -rf ${CHR}/${REF}-${CHR}-${ID}.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.vcf.gz.tbi
 
-sbatch -A ${ACCOUNT} -J filterVcf ${SCRIPTS}/slurm/annotateVcf.sh ${REF} ${ID}
+sbatch -A ${ACCOUNT} -J snpEff.${ID} ${SCRIPTS}/slurm/annotateVcf.sh ${REF} ${ID}

@@ -45,4 +45,4 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVC
     -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
 
-sbatch -A ${ACCOUNT} -J filterVcf ${SCRIPTS}/slurm/filterVcf.sh ${REF} ${SLURM_ARRAY_TASK_ID}
+sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} ${SCRIPTS}/slurm/filterVcf.sh ${REF} ${SLURM_ARRAY_TASK_ID}
