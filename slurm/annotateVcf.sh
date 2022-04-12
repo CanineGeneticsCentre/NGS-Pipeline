@@ -25,11 +25,13 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-REF=$1
-ID=$2
+ID=$1
 source ${REF}.config
 
-echo /rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff -v ${SNPEFF} ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.final.vcf.gz
-/rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff -v ${SNPEFF} ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.final.vcf.gz
+echo /rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff -v -csvStats snpEff/${REF}-${CHR}-${ID}.csv -noStats ${SNPEFF} ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.final.vcf
+/rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff \
+    -v -csvStats snpEff/${REF}-${CHR}-${ID}.csv -noStats \
+    ${SNPEFF} \
+    ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.ann.vcf
 
 #rm -rf ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz.tbi
