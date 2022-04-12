@@ -37,8 +37,10 @@ if [[ ${#CHR} -lt 4 ]] ; then
   CHR="chr"${CHR}
 fi
 
+mkdir -p ${CHR}
+
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVCFs \
     -R ${FASTA}/${GENOME}.fasta \
-    --tmp-dir=${HOME}/hpc-work/tmp/ \
+    --tmp-dir ${HOME}/hpc-work/tmp/ \
     -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
-    -O ${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
+    -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
