@@ -46,7 +46,7 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVC
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
     -R ${FASTA}/${GENOME}.fasta \
-    -V ${CHR}/${REF}-${CHR}-${ID}.vcf.gz \
+    -V ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz \
     --filter-expression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0 || SOR > 3.0 || QUAL < 30" \
     --filter-name "basic" \
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.filtered.vcf.gz
