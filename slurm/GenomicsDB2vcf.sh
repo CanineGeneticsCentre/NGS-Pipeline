@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch gvcf2GenomicsDB.sh <SAMPLE_LIST> <REF>
+#! RUN : sbatch gvcf2GenomicsDB.sh <REF>
 
 #! sbatch directives begin here ###############################
 #! How many whole nodes should be allocated?
@@ -25,25 +25,20 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-#module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
-#module load gatk/4.1.0.0
 module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
-SAMPLE_LIST=$1
-REF=$2
+REF=$1
 source ${REF}.config
 
-
-INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
-CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1`
+INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/${REF}-genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
+CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1 | cut -f 1 -d':'`
 
 if [[ ${#CHR} -lt 4 ]] ; then
   CHR="chr"${CHR}
 fi
 
-
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVCFs \
     -R ${FASTA}/${GENOME}.fasta \
     --tmp-dir=${HOME}/hpc-work/tmp/ \
-    -V gendb://${GDB}/${GENOME}/${CHR} \
-    -O ${REF}-${CHR}.vcf.gz
+    -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
+    -O ${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
