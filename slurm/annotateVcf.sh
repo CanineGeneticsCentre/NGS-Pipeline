@@ -29,8 +29,7 @@ REF=$1
 ID=$2
 source ${REF}.config
 
-alias snpEff='/rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff';
-
-snpEff -v ${SNPEFF} ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.final.vcf.gz
+echo /rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff -v ${SNPEFF} ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.final.vcf.gz
+/rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff -v ${SNPEFF} ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz > ${CHR}/${REF}-${CHR}-${ID}.final.vcf.gz
 
 #rm -rf ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz.tbi
