@@ -9,7 +9,7 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 12:00:00
+#SBATCH --time 06:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=FAIL,INVALID_DEPEND,END
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -44,3 +44,5 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVC
     --tmp-dir ${HOME}/hpc-work/tmp/ \
     -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
+
+sbatch -A ${ACCOUNT} -J filterVcf ${SCRIPTS}/slurm/filterVcf.sh ${REF} ${SLURM_ARRAY_TASK_ID}
