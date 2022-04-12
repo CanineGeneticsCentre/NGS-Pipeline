@@ -12,6 +12,7 @@ CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 
 source ${CFG};
 mkdir -p ${GENOME}/logs; cd $GENOME
+mkdir -p snpEff
 cp $CFG ${REF}.config; source ${REF}.config
 
 
