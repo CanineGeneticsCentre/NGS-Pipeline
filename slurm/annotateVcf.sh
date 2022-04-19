@@ -35,7 +35,7 @@ if [[ ${#CHR} -lt 4 ]] ; then
   CHR="chr"${CHR}
 fi
 
-ls -1 ${CHR}/*.filtered.vcf.gz > ${CHR}.list
+ls -1v ${CHR}/*.filtered.vcf.gz > ${CHR}.list
 
 bcftools concat -f ${CHR}.list > ${REF}-${CHR}.vcf
 
