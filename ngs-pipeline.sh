@@ -44,6 +44,8 @@ if [ $LANES -le 1 ]; then
   exit 1;
 fi
 
+BARCODE=`ls *.fq.gz | head -1 | xargs -n 1 zcat 2>/dev/null | head -1 | cut -d':' -f 1-3`
+
 
 mkdir -p $GENOME; 
 mv $SAMPLE.config $GENOME/
@@ -52,8 +54,6 @@ cd $GENOME
 # generate seqeunce groups for future scatter/gather steps.
 perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
 INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
-
-BARCODE=`ls *.fq.gz | head -1 | xargs -n 1 zcat 2>/dev/null | head -1 | cut -d':' -f 1-3`
 
 # fastq2bam - Submit job array to align samples to ref genome
 jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2bam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2bam.sh ${SAMPLE})
