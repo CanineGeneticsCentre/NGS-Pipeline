@@ -52,12 +52,3 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFilt
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.filtered.vcf.gz
 
 rm -rf ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz.tbi
-
-
-
-
-
-#jid1=$(sbatch -A ${ACCOUNT} -J filterVcf.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} ${SCRIPTS}/slurm/filterVcf.sh ${SLURM_ARRAY_TASK_ID})
-#echo $jid1
-#jid2=$(sbatch -A ${ACCOUNT} -J snpEff.${SLURM_ARRAY_TASK_ID} --export=SCRIPTS=${SCRIPTS},REF=${REF},CHR=${CHR} --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/annotateVcf.sh ${SLURM_ARRAY_TASK_ID})
-#echo $jid2
