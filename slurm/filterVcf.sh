@@ -26,15 +26,18 @@ module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
 module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
+module load bcftools-1.9-gcc-5.4.0-b2hdt5n
 
-ID=$1
 source ${REF}.config
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
     -R ${FASTA}/${GENOME}.fasta \
-    -V ${CHR}/${REF}-${CHR}-${ID}.vcf.gz \
+    -V ${SAMPLE}-${REF}.vcf.gz \
     --filter-expression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0 || SOR > 3.0 || QUAL < 30" \
     --filter-name "basic" \
-    -O ${CHR}/${REF}-${CHR}-${ID}.filtered.vcf.gz
+    -O ${SAMPLE}-${REF}.filtered.vcf.gz
+
+bcftools view -v indels ${SAMPLE}-${REF}.filtered.vcf.gz -Oz -o ${SAMPLE}-${REF}.indels.vcf.gz
+bcftools view -v snps ${SAMPLE}-${REF}.filtered.vcf.gz -Oz -o ${SAMPLE}-${REF}.snps.vcf.gz
 
 #rm -rf ${CHR}/${REF}-${CHR}-${ID}.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.vcf.gz.tbi
