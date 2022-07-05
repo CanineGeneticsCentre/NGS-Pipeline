@@ -40,7 +40,5 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFilt
 bcftools view -v indels ${SAMPLE}-${REF}.filtered.vcf.gz | bcftools annotate -x INFO,^FORMAT/GT,FORMAT/AD,FORMAT/DP,FORMAT/GQ,FORMAT/PL -Oz -o ${SAMPLE}-${REF}.indels.vcf.gz
 bcftools view -v snps ${SAMPLE}-${REF}.filtered.vcf.gz | bcftools annotate -x INFO,^FORMAT/GT,FORMAT/AD,FORMAT/DP,FORMAT/GQ,FORMAT/PL -Oz -o ${SAMPLE}-${REF}.snps.vcf.gz
 
-mkdir done
-mv ${SAMPLE}-${REF}.vcf.gz ${SAMPLE}-${REF}.filtered.vcf.gz done/
 
 #rm -rf ${CHR}/${REF}-${CHR}-${ID}.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.vcf.gz.tbi
