@@ -1,11 +1,3 @@
-#!/bin/bash -l
-
-#SBATCH --export=ALL
-#SBATCH --mail-user=ellen.schofield@aht.org.uk
-#SBATCH --mail-type=ALL
-#SBACTH --mem=1
-##SBATCH -e outputs/job-%j.error
-#SBATCH -o outputs/job-%j.output
 #!/usr/bin/env bash
 
 #! RUN : sbatch vcfStats.sh <LIST>
@@ -26,7 +18,7 @@
 #! For 6GB per CPU, set "-p skylake"; for 12GB per CPU, set "-p skylake-himem":
 #SBATCH -p skylake
 
-#SBATCH -o ../logs/job-%j.out
+#SBATCH -o logs/job-%j.out
 
 echo
 echo ${SAMPLE}

@@ -26,6 +26,6 @@ rsync --progress -av ${WGS}/${SAMPLE}/${SAMPLE}-${REF}.g.vcf.gz* ./
 
 
 
-jid=$(sbatch -A ${ACCOUNT} -J ${REF}.VCF --export=SAMPLE=${SAMPLE},REF=${REF} ${SCRIPTS}/slurm/gvcf2vcf.sh)
-jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.filterVCF --dependency=afterok:${jid1##* } --export=SAMPLE=${SAMPLE},REF=${REF} ${SCRIPTS}/slurm/filterVCF.sh ${SAMPLE})
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.VCF --export=SAMPLE=${SAMPLE},REF=${REF} ${SCRIPTS}/slurm/gvcf2vcf.sh)
+jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.filterVCF --dependency=afterok:${jid1##* } --export=SAMPLE=${SAMPLE},REF=${REF} ${SCRIPTS}/slurm/filterVcf.sh ${SAMPLE})
 jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.vcfStats --dependency=afterok:${jid2##* } --export=SAMPLE=${SAMPLE},REF=${REF} ${SCRIPTS}/slurm/vcfStats.sh ${SAMPLE})
