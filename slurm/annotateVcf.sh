@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch filterVcf.sh <REF>
+#! RUN : sbatch annotateVcf.sh <REF>
 
 #! sbatch directives begin here ###############################
 #! How many whole nodes should be allocated?
