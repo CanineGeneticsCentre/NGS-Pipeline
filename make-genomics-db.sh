@@ -17,7 +17,7 @@ CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 DIR=$(basename $SAMPLE_LIST .list)
 echo "Creating directory ${DIR}"
 mkdir -p $DIR/logs; cd $DIR
-mv ../${SAMPLE_LIST} .
+cp ../${SAMPLE_LIST} .
 cp $CFG ${REF}.config; source ${REF}.config
 
 
