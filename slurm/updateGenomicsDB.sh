@@ -32,7 +32,6 @@ REF=$2
 source ${REF}.config
 
 
-#INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
 INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/${REF}-genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
 CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1 | cut -f 1 -d':'`
 
@@ -43,9 +42,6 @@ fi
 
 GVCFs=""
 for s in `cat ${SAMPLE_LIST}`; do GVCFs+="-V ${s}-${REF}.g.vcf.gz "; done
-#for s in `cat ${SAMPLE_LIST}`; do GVCFs+="-V ${CHR}.${REF}-${s}.g.vcf.gz "; done
-
-#rm -rf ${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID}
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenomicsDBImport \
     ${GVCFs} \
