@@ -20,6 +20,7 @@
 
 #SBATCH -o ../logs/job-%A_%a.out
 
+. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
