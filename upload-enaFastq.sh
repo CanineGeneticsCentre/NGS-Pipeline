@@ -5,7 +5,7 @@
 
 SAMPLE=$1
 
-[[ -z "$SAMPLE" ]] && { echo "ERROR: No list of SAMPLES provided for this run"; exit 1; }
+[[ -z "$SAMPLE" ]] && { echo "ERROR: No SAMPLE provided to upload"; exit 1; }
 
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 rsync --progress -auvh ${WGS}/${SAMPLE}/*.fq.gz ./
