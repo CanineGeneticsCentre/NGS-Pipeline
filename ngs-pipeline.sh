@@ -32,7 +32,6 @@ fi
 
 # Copy files from RCS... will only copy if files no present or rcs version is newer
 rsync --progress -av ${WGS}/${SAMPLE}/*.fq.gz ./
-#rsync --progress -av ${WGS}/${SAMPLE}/*.fastq.gz ./
 
 # Count how many fastq files we have
 COUNT=`ls *.fq.gz | wc -l`

@@ -4,10 +4,12 @@
 #! Eg. : bash upload-enaFastq.sh BoT_37630
 
 SAMPLE=$1
+SCRIPTS=`dirname $0`
 
 [[ -z "$SAMPLE" ]] && { echo "ERROR: No SAMPLE provided to upload"; exit 1; }
 
 mkdir -p $SAMPLE/logs; cd $SAMPLE
 rsync --progress -auvh ${WGS}/${SAMPLE}/*.fq.gz ./
 
-sbatch -J ${SAMPLE}.ascp --export=SAMPLE=${SAMPLE},CONDA_PREFIX=${CONDA_PREFIX},ASPERA_SCP_PASS=${ASPERA_SCP_PASS} slurm/ena-ascp.sh
+echo sbatch -J ${SAMPLE}.ascp --export=SAMPLE=${SAMPLE},CONDA_PREFIX,ASPERA_SCP_PASS ${SCRIPTS}/slurm/ena-ascp.sh
+sbatch -J ${SAMPLE}.ascp --export=SAMPLE=${SAMPLE},CONDA_PREFIX,ASPERA_SCP_PASS ${SCRIPTS}/slurm/ena-ascp.sh

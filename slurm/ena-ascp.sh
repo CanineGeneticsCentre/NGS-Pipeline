@@ -4,7 +4,8 @@
 #SBATCH -o /home/%u/hpc-work/logs/job-%j.out
 #SBATCH -p icelake
 #SBATCH -t 04:00:00
-#SBATCH --mail-type=FAIL,INVALID_DEPEND,END
+##SBATCH --mail-type=FAIL,INVALID_DEPEND,END
+#SBATCH --mail-type=ALL
 
 
 source $CONDA_PREFIX/etc/profile.d/conda.sh  # Always add this command to your scripts
