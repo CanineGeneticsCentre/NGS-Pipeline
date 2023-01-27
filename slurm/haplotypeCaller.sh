@@ -33,13 +33,14 @@ REF=$2
 PCR_MODEL=$3
 source ${SAMPLE}.config
 
-intervals=`head -${SLURM_ARRAY_TASK_ID} sequence_grouping_with_unmapped.txt | tail -1 | sed s/"\t"/" -L "/g`
+#intervals=`head -${SLURM_ARRAY_TASK_ID} sequence_grouping.txt | tail -1 | sed s/"\t"/" -L "/g`
+n=$(printf "%04d" $SLURM_ARRAY_TASK_ID)
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx4G" HaplotypeCaller \
   -R ${FASTA}/${GENOME}.fasta \
   -I ${SAMPLE}-${REF}.bam \
-  -L ${intervals} \
-  -O ${SAMPLE}-${REF}.${SLURM_ARRAY_TASK_ID}.g.vcf \
+  -L intervals/${n}-scattered.interval_list \
+  -O ${SAMPLE}-${REF}.${n}.g.vcf \
   -GQB 10 -GQB 20 -GQB 30 -GQB 40 -GQB 50 -GQB 60 -GQB 70 -GQB 80 -GQB 90 \
   -ERC GVCF \
   --pcr-indel-model ${PCR_MODEL}
