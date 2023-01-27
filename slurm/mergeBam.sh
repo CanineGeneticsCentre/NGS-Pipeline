@@ -35,7 +35,7 @@ source ${SAMPLE}.config
 
 #ls -1 ${SAMPLE}*.recal_data.csv > bsqr_reports.txt
 BAMS=""
-for i in `seq 1 ${INTERVALS}`; do BAMS+="-I ${SAMPLE}.$i.bam "; done
+for i in `seq 0 $(($INTERVALS-1))`; do n=$(printf "%04d" $i); BAMS+="-I ${SAMPLE}.$n.bam "; done
 
 gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O /dev/stdout | gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SortSam --INPUT /dev/stdin  --OUTPUT ${SAMPLE}-${REF}.bam --SORT_ORDER "coordinate" --TMP_DIR ${HOME}/hpc-work/tmp/ --CREATE_INDEX true --CREATE_MD5_FILE true
 
@@ -44,10 +44,11 @@ gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFi
 
 bam_size=$(wc -c < ${SAMPLE}-${REF}.bam)
 if [ $bam_size -ge 50000000 ];then
-  for i in `seq 1 ${INTERVALS}`; do 
-	  rm -rf ${SAMPLE}.$i.bam
-	  rm -rf ${SAMPLE}.$i.bai
-	  rm -rf ${SAMPLE}.$i.bam.md5
+  for i in `seq 0 $(($INTERVALS-1))`; do 
+    n=$(printf "%04d" $i)
+	  rm -rf ${SAMPLE}.$n.bam
+	  rm -rf ${SAMPLE}.$n.bai
+	  rm -rf ${SAMPLE}.$n.bam.md5
   done
   rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5
 fi

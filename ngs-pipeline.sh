@@ -49,10 +49,15 @@ BARCODE=`ls *.fq.gz | head -1 | xargs -n 1 zcat 2>/dev/null | head -1 | cut -d':
 mkdir -p $GENOME; 
 mv $SAMPLE.config $GENOME/
 cd $GENOME
+mkdir intervals
 
 # generate seqeunce groups for future scatter/gather steps.
-perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
-INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
+#perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
+#INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
+
+module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
+gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS} -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
+
 
 # fastq2bam - Submit job array to align samples to ref genome
 jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2bam --array=1-${LANES} ${SCRIPTS}/slurm/fastq2bam.sh ${SAMPLE})
@@ -69,23 +74,23 @@ jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markDuplicates --dependency=afterok:${j
 jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortSam --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/sortSam.sh ${SAMPLE})
 
 # Generate Base Quality Score Recalibration (BQSR) model
-jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid4##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/baseRecalibrator.sh ${SAMPLE})
+jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid4##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/baseRecalibrator.sh ${SAMPLE})
 
 # Merge the recalibration reports resulting from by-interval recalibration
 jid6=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.gatherBQSR --dependency=afterok:${jid5##* } ${SCRIPTS}/slurm/gatherBSQR.sh ${SAMPLE})
 
 
-INTERVALS=`wc -l sequence_grouping_with_unmapped.txt | awk '{print $1}'`
+#INTERVALS=`wc -l sequence_grouping_with_unmapped.txt | awk '{print $1}'`
 # Apply the recalibration model by interval
-jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.applyBQSR --dependency=afterok:${jid6##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/applyBSQR.sh ${SAMPLE})
+jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.applyBQSR --dependency=afterok:${jid6##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/applyBSQR.sh ${SAMPLE})
 
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
 jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid7##* } ${SCRIPTS}/slurm/mergeBam.sh ${SAMPLE} ${INTERVALS} ${REF})
 
 
-INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
+#INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 # Create gvcf files with HaplotypeCaller
-jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid8##* } --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
+jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid8##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
 
 # Merge gVCF files into single gVCF
 jid10=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid9##* } ${SCRIPTS}/slurm/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})

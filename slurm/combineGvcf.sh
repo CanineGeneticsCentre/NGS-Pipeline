@@ -35,14 +35,15 @@ source ${SAMPLE}.config
 
 #ls -1 ${SAMPLE}*.recal_data.csv > bsqr_reports.txt
 GVCFS=""
-for i in `seq 1 ${INTERVALS}`; do GVCFS+="--variant ${SAMPLE}-${REF}.$i.g.vcf "; done
+for i in `seq 0 $(($INTERVALS-1))`; do n=$(printf "%04d" $i); GVCFS+="--variant ${SAMPLE}-${REF}.$n.g.vcf "; done
 
 gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" CombineGVCFs ${GVCFS} -R ${FASTA}/${GENOME}.fasta -O ${SAMPLE}-${REF}.g.vcf.gz
 
 gvcf_size=$(wc -c < ${SAMPLE}-${REF}.g.vcf.gz)
 if [ $gvcf_size -ge 50000000 ];then
-  for i in `seq 1 ${INTERVALS}`; do 
-	  rm -rf ${SAMPLE}-${REF}.$i.g.vcf
-	  rm -rf ${SAMPLE}-${REF}.$i.g.vcf.idx
+  for i in `seq 0 $(($INTERVALS-1))`; do 
+    n=$(printf "%04d" $i)
+	  rm -rf ${SAMPLE}-${REF}.$n.g.vcf
+	  rm -rf ${SAMPLE}-${REF}.$n.g.vcf.idx
   done
 fi

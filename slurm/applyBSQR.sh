@@ -31,6 +31,18 @@ module load gatk/4.1.0.0                    # GATK 4.1
 SAMPLE=$1
 source ${SAMPLE}.config
 
-intervals=`head -${SLURM_ARRAY_TASK_ID} sequence_grouping_with_unmapped.txt | tail -1 | sed s/"\t"/" -L "/g`
+#intervals=`head -${SLURM_ARRAY_TASK_ID} sequence_grouping_with_unmapped.txt | tail -1 | sed s/"\t"/" -L "/g`
+n=$(printf "%04d" $SLURM_ARRAY_TASK_ID)
 
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" ApplyBQSR -R ${FASTA}/${GENOME}.fasta -I ${SAMPLE}.sorted.bam -O ${SAMPLE}.${SLURM_ARRAY_TASK_ID}.bam -L ${intervals} -bqsr ${SAMPLE}.bsqr.out --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 --add-output-sam-program-record --create-output-bam-md5 --use-original-qualities 
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" ApplyBQSR \
+  -R ${FASTA}/${GENOME}.fasta \
+  -I ${SAMPLE}.sorted.bam \
+  -O ${SAMPLE}.${n}.bam \
+  -L intervals/${n}-scattered.interval_list \
+  -bqsr ${SAMPLE}.bsqr.out \
+  --static-quantized-quals 10 \
+  --static-quantized-quals 20 \
+  --static-quantized-quals 30 \
+  --add-output-sam-program-record \
+  --create-output-bam-md5 \
+  --use-original-qualities 

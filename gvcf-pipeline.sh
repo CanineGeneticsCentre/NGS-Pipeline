@@ -39,11 +39,16 @@ fi
 rsync --progress -av ${WGS}/${SAMPLE}/${SAMPLE}-${REF}.ba* ./
 
 # generate seqeunce groups for future scatter/gather steps.
-perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
-INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
+#perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
+#INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
+
+module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
+
+mkdir intervals
+gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS}  -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
 
 # Create gvcf files with HaplotypeCaller
-jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --array=1-${INTERVALS} ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
 
 # Merge gVCF files into single gVCF
 jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})
