@@ -9,7 +9,7 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 12:00:00
+#SBATCH --time 36:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=FAIL,INVALID_DEPEND,END
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -43,12 +43,3 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" GenotypeGVC
     --tmp-dir ${HOME}/hpc-work/tmp/ \
     -V gendb://${GDB}/${GENOME}/${CHR}-${SLURM_ARRAY_TASK_ID} \
     -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz
-
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
-    -R ${FASTA}/${GENOME}.fasta \
-    -V ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz \
-    --filter-expression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0 || SOR > 3.0 || QUAL < 30" \
-    --filter-name "basic" \
-    -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.filtered.vcf.gz
-
-rm -rf ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz.tbi
