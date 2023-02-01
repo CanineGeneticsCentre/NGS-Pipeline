@@ -47,3 +47,11 @@ bcftools concat -f ${CHR}.list > ${REF}-${CHR}.vcf
 
 rm -rf ${REF}-${CHR}.vcf
 tabix -p vcf ${REF}-${CHR}.ann.vcf.gz
+
+if [ ! -f samples.list ]
+then
+  touch samples.list
+  for s in `bcftools query -l ${REF}-${CHR}.ann.vcf.gz`; do 
+    echo -e "$s\tOmit" >> samples.list
+  done
+fi
