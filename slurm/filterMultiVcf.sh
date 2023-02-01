@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch annotateVcf.sh <REF>
+#! RUN : sbatch filterMultiVcf.sh
 
 #! sbatch directives begin here ###############################
 #! How many whole nodes should be allocated?
@@ -16,42 +16,31 @@
 #! interrupted by node failure or system downtime):
 ##SBATCH --no-requeue
 #! For 6GB per CPU, set "-p skylake"; for 12GB per CPU, set "-p skylake-himem":
-#SBATCH -p skylake
-#SBATCH --mem=5gb
+#SBATCH -p skylake-himem
+#SBATCH --mem=10gb
 
-#SBATCH -o logs/job-%j.out
+#SBATCH -o logs/job-%A_%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load bcftools-1.9-gcc-5.4.0-b2hdt5n
-module load tabix-2013-12-16-gcc-5.4.0-xn3xiv7
+module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
-CHR=$1
 source ${REF}.config
+
+INTERVALS=`head -${SLURM_ARRAY_TASK_ID} ${FASTA}/${REF}-genomicsDB.intervals | tail -1 | sed s/" "/" -L "/g`
+CHR=`echo ${INTERVALS} | cut -f 1 -d' ' | cut -d'_' -f 1 | cut -f 1 -d':'`
 
 if [[ ${#CHR} -lt 4 ]] ; then
   CHR="chr"${CHR}
 fi
 
-ls -1v ${CHR}/*.filtered.vcf.gz > ${CHR}.list
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
+    -R ${FASTA}/${GENOME}.fasta \
+    -V ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz \
+    --filter-expression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0 || SOR > 3.0 || QUAL < 30" \
+    --filter-name "basic" \
+    -O ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.filtered.vcf.gz
 
-bcftools concat -f ${CHR}.list > ${REF}-${CHR}.vcf
-
-/rds/project/rds-Qr3fy2NTCy0/Software/local/snpEff/scripts/snpEff \
-    -v -csvStats snpEff/${REF}-${CHR}.csv \
-    -stats snpEff/${REF}-${CHR}.html \
-    ${SNPEFF} \
-    ${REF}-${CHR}.vcf | bgzip -c > ${REF}-${CHR}.ann.vcf.gz
-
-rm -rf ${REF}-${CHR}.vcf
-tabix -p vcf ${REF}-${CHR}.ann.vcf.gz
-
-if [ ! -f samples.list ]
-then
-  touch samples.list
-  for s in `bcftools query -l ${REF}-${CHR}.ann.vcf.gz`; do 
-    echo -e "$s\tOmit" >> samples.list
-  done
-fi
+rm -rf ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz ${CHR}/${REF}-${CHR}-${SLURM_ARRAY_TASK_ID}.vcf.gz.tbi
