@@ -61,8 +61,11 @@ tmp=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.yield --dependency=afterok:${jid1##* } -
 # markAdapters
 jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markAdapters --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/markAdapters.sh ${SAMPLE})
 
-# sam2fastq
+# sam2fastq - removes ${SAMPLE}.L${LANE}.adaptMarked.bam
 jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sam2fastq --dependency=afterok:${jid2##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/sam2fastq.sh ${SAMPLE})
 
-# alignfastq (depends on jid1 AND jid3)
+# alignfastq
 jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.alignFastq --dependency=afterok:${jid3##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/alignFastq.sh ${SAMPLE})
+
+# mergeBamAlignment (depends on jid1 AND jid4) - removes ${SAMPLE}.L${LANE}.unaligned.bam, ${SAMPLE}.L${LANE}.aligned.bam & ${SAMPLE}.L${LANE}.fastq.gz
+jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.mergeBam --dependency=afterok:${jid4##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/mergeBamAlignment.sh ${SAMPLE})
