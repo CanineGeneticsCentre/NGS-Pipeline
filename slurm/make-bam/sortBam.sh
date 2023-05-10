@@ -24,14 +24,21 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" SortSam  \
   --CREATE_INDEX true \
   --CREATE_MD5_FILE false \
   --SORT_ORDER "coordinate" \
-  --VALIDATION_STRINGENCY SILENT
+  --VALIDATION_STRINGENCY SILENT \
   --TMP_DIR ${HOME}/hpc-work/tmp/
 
 if [ ! -f ${SAMPLE}.sorted.bam ]; then
 	exit 1;
 else
-	bam_size=$(wc -c < ${SAMPLE}.sorted.bam)
-	if [ $bam_size -ge 50000000 ]; then
-		rm -rf ${SAMPLE}.aligned.unsorted.dedup.bam
-	fi
+  input_size=$(stat -c%s "${SAMPLE}.aligned.unsorted.dedup.bam")
+  output_size=$(stat -c%s "${SAMPLE}.sorted.bam")
+  if [ output_size > input_size ]; then
+    mv ${SAMPLE}.aligned.unsorted.dedup.bam tmp_files/
+  else
+    exit 1;
+  fi
+#	bam_size=$(wc -c < ${SAMPLE}.sorted.bam)
+#	if [ $bam_size -ge 50000000 ]; then
+#		rm -rf ${SAMPLE}.aligned.unsorted.dedup.bam
+#	fi
 fi
