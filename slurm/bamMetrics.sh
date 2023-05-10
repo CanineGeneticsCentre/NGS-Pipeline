@@ -19,7 +19,7 @@
 #SBATCH -p skylake
 #SBATCH --mem=5gb
 
-#SBATCH -o ../logs/job-%j.out
+#SBATCH -o ../logs/bamMetrics-%j.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
@@ -35,19 +35,19 @@ source ${SAMPLE}.config
 BAM_FILE=${SAMPLE}-${REF}.bam
 
 
-samtools flagstat ${BAM_FILE} > flagstat.out
-picard_latest CollectWgsMetrics INPUT=${BAM_FILE} O=collect_wgs_metrics.txt REFERENCE_SEQUENCE=${FASTA}/${GENOME}.fasta STOP_AFTER=100000000 VALIDATION_STRINGENCY=LENIENT
-picard_latest CollectInsertSizeMetrics INPUT=${BAM_FILE} O=insert_size_metrics.txt H=insert_size_histogram.pdf VALIDATION_STRINGENCY=LENIENT
+samtools flagstat ${BAM_FILE} > metrics/flagstat.out
+picard_latest CollectWgsMetrics INPUT=${BAM_FILE} O=metrics/collect_wgs_metrics.txt REFERENCE_SEQUENCE=${FASTA}/${GENOME}.fasta STOP_AFTER=100000000 VALIDATION_STRINGENCY=LENIENT
+picard_latest CollectInsertSizeMetrics INPUT=${BAM_FILE} O=metrics/insert_size_metrics.txt H=metrics/insert_size_histogram.pdf VALIDATION_STRINGENCY=LENIENT
 
 echo ${SAMPLE}
 echo "..."
 
-grep 'in total' flagstat.out
-grep '%' flagstat.out | grep -v 'singleton'
+grep 'in total' metrics/flagstat.out
+grep '%' metrics/flagstat.out | grep -v 'singleton'
 echo "..."
 
-head -8 collect_wgs_metrics.txt | tail -2 | cut -f 2,3,15,16,18,20-22
+head -8 metrics/collect_wgs_metrics.txt | tail -2 | cut -f 2,3,15,16,18,20-22
 echo "..."
 
-head -8 insert_size_metrics.txt | tail -2 | cut -f 6,8
+head -8 metrics/insert_size_metrics.txt | tail -2 | cut -f 6,8
 echo "..."

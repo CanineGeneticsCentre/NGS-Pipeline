@@ -26,7 +26,8 @@ sbatch -J ${SAMPLE}.ascp --export=SAMPLE=${SAMPLE},CONDA_PREFIX,ASPERA_SCP_PASS 
 
 if [ $COUNT -le 1 ]; then
   md5sum *.fastq.gz > ${SAMPLE}.fastq.md5
-  for f in `ls *.fastq.gz ${SAMPLE}.fastq.md5`; do 
-    sync --progress -auvh0. $f ${WGS}/${SAMPLE}/;
-  done
+  rm -rf *.r_1.fq.gz *.r_2.fq.gz
+#  for f in `ls *.fastq.gz ${SAMPLE}.fastq.md5`; do 
+#    sync --progress -auvh0. $f ${WGS}/${SAMPLE}/;
+#  done
 fi

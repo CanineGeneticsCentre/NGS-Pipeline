@@ -19,7 +19,7 @@
 #SBATCH -p skylake
 #SBATCH --mem=5gb
 
-#SBATCH -o ../logs/job-%A_%a.out
+#SBATCH -o ../logs/baseRecal-%A_%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded

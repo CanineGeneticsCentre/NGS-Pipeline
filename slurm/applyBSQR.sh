@@ -19,14 +19,13 @@
 #SBATCH -p skylake
 #SBATCH --mem=5gb
 
-#SBATCH -o ../logs/job-%A_%a.out
+#SBATCH -o ../logs/applyBQSR-%A_%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
-module load gatk/4.1.0.0                    # GATK 4.1
+module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
 SAMPLE=$1
 source ${SAMPLE}.config

@@ -7,9 +7,9 @@
 #SBATCH --nodes=1
 #! How many (MPI) tasks will there be in total? (<= nodes*32)
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
-#SBATCH --ntasks=16
+#SBATCH --ntasks=4
 #! How much wallclock time will be required?
-#SBATCH --time 12:00:00
+#SBATCH --time 00:05:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=BEGIN,FAIL,INVALID_DEPEND
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -36,6 +36,6 @@ SAMPLE=$3
 source /home/es904/scripts/NGS-Pipeline/ngs-pipeline-cf4.config
 
 #bwa mem -M -t 16 ${FASTA}/${GENOME}.fasta ${FILE1} ${FILE2} | samtools view -1 - > ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam
-bwa mem -M -t 16 ${FASTA}/${GENOME}.fasta ${FILE1} ${FILE2} | samtools sort -o ${SAMPLE}.aligned.bam
+bwa mem -M -t 4 ${FASTA}/${GENOME}.fasta ${FILE1} ${FILE2} | samtools sort -o ${SAMPLE}.aligned.bam
 
 samtools flagstat ${SAMPLE}.aligned.bam > ${SAMPLE}.flagstat.out

@@ -19,7 +19,7 @@
 #SBATCH -p skylake
 #SBATCH --mem=5gb
 
-#SBATCH -o ../logs/job-%j.out
+#SBATCH -o ../logs/bqsrMerge-%j.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
@@ -50,5 +50,5 @@ if [ $bam_size -ge 50000000 ];then
 	  rm -rf ${SAMPLE}.$n.bai
 	  rm -rf ${SAMPLE}.$n.bam.md5
   done
-  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5
+  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5 ${SAMPLE}.bsqr.out
 fi
