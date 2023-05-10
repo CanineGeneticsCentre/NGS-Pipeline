@@ -13,14 +13,18 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
 SAMPLE=$1
 LANES=$2
+source ${SAMPLE}.config
+
+module load ${GATK}
+
 
 INPUT=''
 for LANE in `seq 1 ${LANES}`; do 
   INPUT+=" --INPUT lane${LANE}/${SAMPLE}.L${LANE}.merged.bam"
+  ((input_size+=$(stat -c%s "lane${LANE}/${SAMPLE}.L${LANE}.merged.bam")))
 done
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MarkDuplicates ${INPUT} \
@@ -31,3 +35,11 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MarkDuplica
   --CLEAR_DT "false" \
   --READ_NAME_REGEX null \
   --TMP_DIR ${HOME}/hpc-work/tmp/
+
+# If output file from MarkDuplicates is larger than the sum of the input files, DELETE input files
+output_size=$(stat -c%s "${SAMPLE}.aligned.unsorted.dedup.bam")
+if [ output_size > input_size ]; then
+  for LANE in `seq 1 ${LANES}`; do 
+    mv lane${LANE}/${SAMPLE}.L${LANE}.merged.bam tmp_files
+  done
+fi

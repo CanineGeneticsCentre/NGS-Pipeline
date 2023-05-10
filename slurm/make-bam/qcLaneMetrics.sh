@@ -7,20 +7,22 @@
 #SBATCH --mail-type=END,FAIL,INVALID_DEPEND
 #SBATCH -p skylake
 
-#SBATCH -o logs/qc-Lane_%j.out
+#SBATCH -o logs/qc-Lane_%A-%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
-
-LANE=$1
+SAMPLE=$1
+LANE=$SLURM_ARRAY_TASK_ID
 DIR=lane${LANE}
+source ${SAMPLE}.config
+
+module load $GATK
 
 gatk CollectMultipleMetrics \
-	--INPUT ${DIR}/ESD_37411.L${LANE}.merged.bam \
-	--OUTPUT metrics/ESD_37411.L${LANE}.readgroup \
+	--INPUT ${DIR}/${SAMPLE}.L${LANE}.merged.bam \
+	--OUTPUT metrics/${SAMPLE}.L${LANE}.readgroup \
 	--ASSUME_SORTED true \
 	--PROGRAM null \
 	--PROGRAM CollectBaseDistributionByCycle \
