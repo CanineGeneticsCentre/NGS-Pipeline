@@ -41,8 +41,6 @@ if [ $LANES -le 1 ]; then
   exit 1;
 fi
 
-#BARCODE=`ls *.fq.gz | head -1 | xargs -n 1 zcat 2>/dev/null | head -1 | cut -d':' -f 1-3`
-
 mkdir -p $GENOME; 
 mv ${SAMPLE}-${REF}.config $GENOME/${SAMPLE}.config
 cd $GENOME
