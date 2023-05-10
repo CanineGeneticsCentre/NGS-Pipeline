@@ -13,11 +13,13 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
 SAMPLE=$1
 LANE=$SLURM_ARRAY_TASK_ID
 DIR=lane${LANE}
+source ${SAMPLE}.config
+
+module load ${GATK}
 
 gatk CollectQualityYieldMetrics \
 	--INPUT ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam \

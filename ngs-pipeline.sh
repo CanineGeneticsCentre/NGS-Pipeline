@@ -55,4 +55,14 @@ gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-co
 # fastq2sam
 jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/fastq2sam.sh ${SAMPLE})
 
+# QC - Yield metrics
+tmp=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.yield --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/qcYieldMetrics.sh ${SAMPLE})
 
+# markAdapters
+jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markAdapters --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/markAdapters.sh ${SAMPLE})
+
+# sam2fastq
+jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sam2fastq --dependency=afterok:${jid2##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/sam2fastq.sh ${SAMPLE})
+
+# alignfastq (depends on jid1 AND jid3)
+jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.alignFastq --dependency=afterok:${jid3##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/alignFastq.sh ${SAMPLE})
