@@ -15,7 +15,6 @@ module load rhel7/default-peta4             # REQUIRED - loads the basic environ
 
 
 SAMPLE=$1
-BATCH=$2
 LANE=$SLURM_ARRAY_TASK_ID
 DIR=lane${LANE}
 
