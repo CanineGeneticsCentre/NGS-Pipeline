@@ -40,4 +40,6 @@ FILES=(../*.s_${LANE}.*fq.gz)
 output_size=$(stat -c%s "${DIR}/${SAMPLE}.L${LANE}.fastq.gz")
 if [ output_size > input_size ]; then
   mv ${DIR}/${SAMPLE}.L${LANE}.adaptMarked.bam tmp_files/
+else
+  exit 1;
 fi

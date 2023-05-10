@@ -32,7 +32,18 @@ SAMPLE=$1
 source ${SAMPLE}.config
 
 
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SortSam  --INPUT ${SAMPLE}.aligned.unsorted.dedup.bam --OUTPUT /dev/stdout --SORT_ORDER "coordinate" --TMP_DIR ${HOME}/hpc-work/tmp/ | gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SetNmMdAndUqTags --INPUT /dev/stdin --OUTPUT ${SAMPLE}.sorted.bam --CREATE_INDEX true --CREATE_MD5_FILE true --REFERENCE_SEQUENCE ${FASTA}/${GENOME}.fasta --TMP_DIR ${HOME}/hpc-work/tmp/
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SortSam  \
+	--INPUT ${SAMPLE}.aligned.unsorted.dedup.bam \
+	--OUTPUT /dev/stdout \
+	--SORT_ORDER "coordinate" \
+	--TMP_DIR ${HOME}/hpc-work/tmp/ | \
+	gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SetNmMdAndUqTags \
+	--INPUT /dev/stdin \
+	--OUTPUT ${SAMPLE}.sorted.bam \
+	--CREATE_INDEX true \
+	--CREATE_MD5_FILE true \
+	--REFERENCE_SEQUENCE ${FASTA}/${GENOME}.fasta \
+	--TMP_DIR ${HOME}/hpc-work/tmp/
 
 bam_size=$(wc -c < ${SAMPLE}.sorted.bam)
 if [ $bam_size -ge 50000000 ]; then

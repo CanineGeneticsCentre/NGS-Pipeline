@@ -13,13 +13,15 @@
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga  # gatk
-module load bwa/0.7.12                      # bwa
-module load samtools/1.14                   # samtools
 
 SAMPLE=$1
 LANE=$SLURM_ARRAY_TASK_ID
 DIR=lane${LANE}
+
+source ${SAMPLE}.config
+
+module load ${GATK}
+module load ${SAMTOOLS}
 
 PG_ID=$(samtools view -H ${DIR}/${SAMPLE}.L${LANE}.aligned.bam | grep '@PG' | grep 'ID:bwa' | cut -f 2 | sed 's/ID://')
 PG_PN=$(samtools view -H ${DIR}/${SAMPLE}.L${LANE}.aligned.bam | grep '@PG' | grep 'ID:bwa' | cut -f 3 | sed 's/PN://')
@@ -27,7 +29,7 @@ PG_VN=$(samtools view -H ${DIR}/${SAMPLE}.L${LANE}.aligned.bam | grep '@PG' | gr
 PG_CL=$(samtools view -H ${DIR}/${SAMPLE}.L${LANE}.aligned.bam | grep '@PG' | grep 'ID:bwa' | cut -f 5 | sed 's/CL://')
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MergeBamAlignment \
-  --REFERENCE_SEQUENCE /rds/project/rds-9sJA7YGzZRc/Genomes/canfam4/current/canfam4.fasta \
+  --REFERENCE_SEQUENCE ${FASTA}/${GENOME}.fasta \
   --UNMAPPED_BAM ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam \
   --ALIGNED_BAM ${DIR}/${SAMPLE}.L${LANE}.aligned.bam \
   --OUTPUT ${DIR}/${SAMPLE}.L${LANE}.merged.bam \
@@ -52,3 +54,13 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MergeBamAli
   --ALIGNED_READS_ONLY false \
   --INCLUDE_SECONDARY_ALIGNMENTS true \
   --TMP_DIR ${HOME}/hpc-work/tmp/
+
+
+input_size=$(stat -c%s "${DIR}/${SAMPLE}.L${LANE}.unaligned.bam")
+output_size=$(stat -c%s "${DIR}/${SAMPLE}.L${LANE}.merged.bam")
+
+if [ output_size > input_size ]; then
+  mv ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam ${DIR}/${SAMPLE}.L${LANE}.aligned.bam ${DIR}/${SAMPLE}.L${LANE}.fastq.gz tmp_files/
+else
+  exit 1;
+fi

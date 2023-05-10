@@ -19,13 +19,8 @@ LANE=$SLURM_ARRAY_TASK_ID
 DIR=lane${LANE}
 
 source ${SAMPLE}.config
-mkdir $DIR
 
 module load ${BWA}
 module load ${SAMTOOLS}
-
-SAMPLE=$1
-LANE=$SLURM_ARRAY_TASK_ID
-DIR=lane${LANE}
 
 bwa mem -K 100000000 -p -v 3 -t 16 -Y ${FASTA}/${GENOME}.fasta ${DIR}/${SAMPLE}.L${LANE}.fastq.gz | samtools view -h -b -o ${DIR}/${SAMPLE}.L${LANE}.aligned.bam

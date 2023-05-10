@@ -41,7 +41,10 @@ source ${SAMPLE}.config
 #picard_latest AddOrReplaceReadGroups INPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam OUTPUT=${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_sorted_rg.bam RGID=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGLB=${SAMPLE} RGPL=${PLATFORM} RGPU=${BARCODE}.${SLURM_ARRAY_TASK_ID} RGSM=${SAMPLE} SORT_ORDER=coordinate CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT
 
 
-gatk AddOrReplaceReadGroups --INPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam --OUTPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_rg.bam --RGLB ${SAMPLE} --RGPL ${PLATFORM} --RGPU ${BARCODE}.${SLURM_ARRAY_TASK_ID} --RGSM ${SAMPLE} --RGID ${BARCODE}.${SLURM_ARRAY_TASK_ID} --TMP_DIR ${HOME}/hpc-work/tmp/ --VALIDATION_STRINGENCY SILENT
+gatk AddOrReplaceReadGroups --INPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}.aligned.bam \
+	--OUTPUT ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_rg.bam \
+	--RGLB ${SAMPLE} --RGPL ${PLATFORM} --RGPU ${BARCODE}.${SLURM_ARRAY_TASK_ID} --RGSM ${SAMPLE} --RGID ${BARCODE}.${SLURM_ARRAY_TASK_ID} \
+	--TMP_DIR ${HOME}/hpc-work/tmp/ --VALIDATION_STRINGENCY SILENT
 
 bam_size=$(wc -c < ${SAMPLE}.s_${SLURM_ARRAY_TASK_ID}_aligned_rg.bam)
 if [ $bam_size -ge 50000000 ]; then
