@@ -19,36 +19,41 @@
 #SBATCH -p skylake
 #SBATCH --mem=5gb
 
-#SBATCH -o ../logs/bqsrMerge-%j.out
+#SBATCH -o logs/bqsrMerge-%j.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
-module load gatk/4.1.0.0                    # GATK 4.1
 
 SAMPLE=$1
 INTERVALS=$2
 REF=$3
 source ${SAMPLE}.config
 
-#ls -1 ${SAMPLE}*.recal_data.csv > bsqr_reports.txt
+module load ${GATK}
+
 BAMS=""
-for i in `seq 0 $(($INTERVALS-1))`; do n=$(printf "%04d" $i); BAMS+="-I ${SAMPLE}.$n.bam "; done
+for i in `seq 0 $(($INTERVALS-1))`; do n=$(printf "%04d" $i); BAMS+="-I base_recal/${SAMPLE}.$n.bam "; done
 
-gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O /dev/stdout | gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" SortSam --INPUT /dev/stdin  --OUTPUT ${SAMPLE}-${REF}.bam --SORT_ORDER "coordinate" --TMP_DIR ${HOME}/hpc-work/tmp/ --CREATE_INDEX true --CREATE_MD5_FILE true
+gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx4G" GatherBamFiles ${BAMS} -O /dev/stdout | \
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx4G" SortSam \
+  --INPUT /dev/stdin  \
+  --OUTPUT ${SAMPLE}-${REF}.bam \
+  --SORT_ORDER "coordinate" \
+  --TMP_DIR ${HOME}/hpc-work/tmp/ \
+  --CREATE_INDEX true \
+  --CREATE_MD5_FILE true
 
-#gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBamFiles ${BAMS} -O ${SAMPLE}.merged.bam
 
+if [ ! -f ${SAMPLE}-${REF}.bam ]; then
+  echo "ERROR - ${SAMPLE}-${REF}.bam does not exist";
+	exit 1;
+fi
 
-bam_size=$(wc -c < ${SAMPLE}-${REF}.bam)
-if [ $bam_size -ge 50000000 ];then
-  for i in `seq 0 $(($INTERVALS-1))`; do 
-    n=$(printf "%04d" $i)
-	  rm -rf ${SAMPLE}.$n.bam
-	  rm -rf ${SAMPLE}.$n.bai
-	  rm -rf ${SAMPLE}.$n.bam.md5
-  done
-  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5 ${SAMPLE}.bsqr.out
+input_size=$(stat -c%s "${SAMPLE}.sorted.bam")
+output_size=$(stat -c%s "${SAMPLE}-${REF}.bam")
+if [ output_size > input_size ]; then
+  rm -rf base_recal;
+  mv ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.sorted.bam.md5 ${SAMPLE}.bsqr.out tmp_files/
 fi

@@ -19,26 +19,24 @@
 #SBATCH -p skylake
 #SBATCH --mem=5gb
 
-#SBATCH -o ../logs/gatherBQSR-%j.out
+#SBATCH -o logs/gatherBQSR-%j.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load jdk-8u141-b15-gcc-5.4.0-p4aaopt 
-module load gatk/4.1.0.0                    # GATK 4.1
 
 SAMPLE=$1
 source ${SAMPLE}.config
 
-#ls -1 ${SAMPLE}*.recal_data.csv > bsqr_reports.txt
+module load ${GATK}
+
 REPORTS=""
-for f in `ls ${SAMPLE}.*.bsqr.txt`; do REPORTS+="-I $f "; done
+for f in `ls base_recal/${SAMPLE}.*.bsqr.txt`; do REPORTS+="-I $f "; done
 
 
-gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" GatherBQSRReports ${REPORTS} -O ${SAMPLE}.bsqr.out
+gatk --java-options  "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx4G" GatherBQSRReports ${REPORTS} -O ${SAMPLE}.bsqr.out
 
-if [ -s "${SAMPLE}.bsqr.out" ]
-then
-	rm -rf ${SAMPLE}.*.bsqr.txt
+if [ -s "${SAMPLE}.bsqr.out" ]; then
+	rm -rf base_recal/${SAMPLE}.*.bsqr.txt
 fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch applyBSQR.sh <SAMPLE>
+#! RUN : sbatch sortSam.sh <SAMPLE>
 
 #! sbatch directives begin here ###############################
 #! How many whole nodes should be allocated?
@@ -9,7 +9,7 @@
 #! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
 #SBATCH --ntasks=1
 #! How much wallclock time will be required?
-#SBATCH --time 04:00:00
+#SBATCH --time 00:30:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=FAIL,INVALID_DEPEND
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -19,29 +19,23 @@
 #SBATCH -p skylake
 #SBATCH --mem=5gb
 
-#SBATCH -o ../logs/applyBQSR-%A_%a.out
+#SBATCH -o logs/baseRecal-%A_%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
 
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
 
 SAMPLE=$1
 source ${SAMPLE}.config
-
-#intervals=`head -${SLURM_ARRAY_TASK_ID} sequence_grouping_with_unmapped.txt | tail -1 | sed s/"\t"/" -L "/g`
 n=$(printf "%04d" $SLURM_ARRAY_TASK_ID)
 
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx2G" ApplyBQSR \
+module load ${GATK}
+
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx4G" BaseRecalibrator \
   -R ${FASTA}/${GENOME}.fasta \
   -I ${SAMPLE}.sorted.bam \
-  -O ${SAMPLE}.${n}.bam \
-  -L intervals/${n}-scattered.interval_list \
-  -bqsr ${SAMPLE}.bsqr.out \
-  --static-quantized-quals 10 \
-  --static-quantized-quals 20 \
-  --static-quantized-quals 30 \
-  --add-output-sam-program-record \
-  --create-output-bam-md5 \
-  --use-original-qualities 
+  --use-original-qualities \
+  -O base_recal/${SAMPLE}.${n}.bsqr.txt \
+  --known-sites ${BQSR} \
+  -L intervals/${n}-scattered.interval_list 
