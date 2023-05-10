@@ -41,5 +41,6 @@ output_size=$(stat -c%s "${SAMPLE}.aligned.unsorted.dedup.bam")
 if [ output_size > input_size ]; then
   for LANE in `seq 1 ${LANES}`; do 
     mv lane${LANE}/${SAMPLE}.L${LANE}.merged.bam tmp_files
+    rm -rf lane${LANE}
   done
 fi
