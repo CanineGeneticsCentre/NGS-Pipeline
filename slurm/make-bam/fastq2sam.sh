@@ -12,13 +12,17 @@
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge                                # Removes all modules still loaded
 module load rhel7/default-peta4             # REQUIRED - loads the basic environment
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
+
 
 SAMPLE=$1
 BATCH=$2
 LANE=$SLURM_ARRAY_TASK_ID
 DIR=lane${LANE}
+
+source ${SAMPLE}.config
 mkdir $DIR
+
+module load ${GATK}
 
 FILES=(../*.s_${LANE}.*fq.gz)
 BARCODE=$(echo ${FILES[0]} | sed 's/..\///' | cut -d'.' -f 2)	#UDP0021
@@ -30,9 +34,8 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx4G" FastqToSam \
   --OUTPUT ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam \
   --READ_GROUP_NAME ${FLOWCELL}.L${LANE} \
   --SAMPLE_NAME ${SAMPLE} \
-  --LIBRARY_NAME ${BATCH} \
+  --LIBRARY_NAME ${SAMPLE} \
   --PLATFORM_UNIT ${FLOWCELL}.L${LANE}.${BARCODE} \
   --PLATFORM illumina \
-  --SEQUENCING_CENTER CRUK-CI \
-  --RUN_DATE 2021-06-11T00:00:00-0400
-
+  --SEQUENCING_CENTER CRUK-CI 
+#  --RUN_DATE 2021-06-11T00:00:00-0400
