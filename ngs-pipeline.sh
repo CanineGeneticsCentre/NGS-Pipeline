@@ -47,7 +47,7 @@ mkdir -p $GENOME;
 mv ${SAMPLE}-${REF}.config $GENOME/${SAMPLE}.config
 cd $GENOME
 
-mkdir metrics logs tmp_files intervals
+mkdir metrics logs tmp_files intervals base_recal
 
 module load ${GATK}
 gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS} -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
@@ -56,7 +56,7 @@ gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-co
 jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.fastq2sam --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/fastq2sam.sh ${SAMPLE})
 
 # QC - Yield metrics
-tmp=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.yield --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/qcYieldMetrics.sh ${SAMPLE})
+tmp=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.yieldQC --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/qcYieldMetrics.sh ${SAMPLE})
 
 # markAdapters
 jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markAdapters --dependency=afterok:${jid1##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/markAdapters.sh ${SAMPLE})
@@ -69,3 +69,31 @@ jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.alignFastq --dependency=afterok:${jid3#
 
 # mergeBamAlignment (depends on jid1 AND jid4) - removes ${SAMPLE}.L${LANE}.unaligned.bam, ${SAMPLE}.L${LANE}.aligned.bam & ${SAMPLE}.L${LANE}.fastq.gz
 jid5=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.mergeBam --dependency=afterok:${jid4##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/mergeBamAlignment.sh ${SAMPLE})
+
+# QC - Lane/RG metrics
+tmp=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.laneQC --dependency=afterok:${jid5##* } --array=1-${LANES} ${SCRIPTS}/slurm/make-bam/qcLaneMetrics.sh ${SAMPLE})
+
+# markDuplicates - removes lane${LANE}/${SAMPLE}.L${LANE}.merged.bam
+# We take advantage of the tool's ability to take multiple BAM inputs and write out a single output
+# to avoid having to spend time just merging BAM files.
+jid6=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markDuplicates --dependency=afterok:${jid5##* } ${SCRIPTS}/slurm/make-bam/markDuplicates.sh ${SAMPLE} ${LANES})
+
+# sortBam - removes ${SAMPLE}.aligned.unsorted.dedup.bam
+# Sort BAM file by coordinate order and fix tag values for NM and UQ
+jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortSam --dependency=afterok:${jid6##* } ${SCRIPTS}/slurm/make-bam/sortBam.sh ${SAMPLE})
+
+###########################################################
+#                   BASE RECALLIBRATION                   #
+###########################################################
+
+# Generate Base Quality Score Recalibration (BQSR) model
+jid8=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BQSR --dependency=afterok:${jid7##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/make-bam/baseRecalibrator.sh ${SAMPLE})
+
+# Merge the recalibration reports resulting from by-interval recalibration
+jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.gatherBQSR --dependency=afterok:${jid85##* } ${SCRIPTS}/slurm/make-bam/gatherBSQR.sh ${SAMPLE})
+
+# Apply the recalibration model by interval
+jid10=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.applyBQSR --dependency=afterok:${jid9##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/make-bam/applyBSQR.sh ${SAMPLE})
+
+# Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs - removes base_recal dir, ${SAMPLE}.sorted.bam, ${SAMPLE}.sorted.bai, ${SAMPLE}.sorted.bam.md5 & ${SAMPLE}.bsqr.out
+jid11=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.BAM --dependency=afterok:${jid10##* } ${SCRIPTS}/slurm/make-bam/bqsrMerge.sh ${SAMPLE} ${INTERVALS} ${REF})
