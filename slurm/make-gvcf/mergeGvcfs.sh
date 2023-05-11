@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch haplotypeCaller.sh <SAMPLE>
+#! RUN : sbatch mergeGvcfs.sh <SAMPLE>
 
 #! sbatch directives begin here ###############################
 #SBATCH --nodes=1
@@ -10,7 +10,7 @@
 ##SBATCH --no-requeue
 #SBATCH -p cclake
 
-#SBATCH -o logs/haplotypeCaller-%A_%a.out
+#SBATCH -o logs/gvcfMerge-%A_%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge
