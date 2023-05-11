@@ -3,10 +3,10 @@
 #! RUN : sbatch mergeBam.sh <SAMPLE> <INTERVALS>
 
 #! sbatch directives begin here ###############################
-#SBATCH --nodes=14
-#SBATCH --ntasks=14
-#SBATCH --time 04:00:004
-#SBATCH --mail-type=FAIL,INVALID_DEPEND,END4
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --time 04:00:00
+#SBATCH --mail-type=FAIL,INVALID_DEPEND,END
 #SBATCH -p cclake
 
 #SBATCH -o logs/bqsrMerge-%j.out
