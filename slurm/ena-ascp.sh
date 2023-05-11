@@ -2,7 +2,7 @@
 
 #SBATCH -A MELLERSH-SL3-CPU
 #SBATCH -o /home/%u/hpc-work/logs/job-%j.out
-#SBATCH -p skylake
+#SBATCH -p cclake
 #SBATCH -t 04:00:00
 #SBATCH --mail-type=FAIL,INVALID_DEPEND,END
 ##SBATCH --mail-type=ALL
