@@ -110,10 +110,15 @@ jid12=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.bamQC --dependency=afterok:${jid11##* 
 ###########################################################
 
 # Create gvcf files with HaplotypeCaller
-jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid11##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/make-gvcf/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
+jid13=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid11##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/make-gvcf/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
+
+# Merge gVCF files into single gVCF
+#jid14=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid13##* } ${SCRIPTS}/slurm/make-gvcf/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})
+jid14=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid13##* } ${SCRIPTS}/slurm/make-gvcf/mergeGvcfs.sh ${SAMPLE})
 
 ###########################################################
 #                         OUTPUT                          #
 ###########################################################
 echo "BAM file = job-${jid11##* }"
+echo "gVCF file = job-${jid14##* }"
 echo "bamMetrics-${jid12##* }"
