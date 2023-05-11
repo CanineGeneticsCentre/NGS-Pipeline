@@ -72,7 +72,7 @@ jid6=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.markDuplicates --dependency=afterok:${j
 
 # sortBam - removes ${SAMPLE}.aligned.unsorted.dedup.bam
 # Sort BAM file by coordinate order and fix tag values for NM and UQ
-jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortSam --dependency=afterok:${jid6##* } ${SCRIPTS}/slurm/make-bam/sortBam.sh ${SAMPLE})
+jid7=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.sortBam --dependency=afterok:${jid6##* } ${SCRIPTS}/slurm/make-bam/sortBam.sh ${SAMPLE})
 
 ###########################################################
 #                   BASE RECALLIBRATION                   #
