@@ -45,7 +45,7 @@ mkdir -p $GENOME;
 mv ${SAMPLE}-${REF}.config $GENOME/${SAMPLE}.config
 cd $GENOME
 
-mkdir metrics logs tmp_files intervals base_recal
+mkdir metrics logs tmp_files intervals base_recal gvcf
 
 module load ${GATK}
 gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS} -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
@@ -109,6 +109,8 @@ jid12=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.bamQC --dependency=afterok:${jid11##* 
 #                        gVCF File                        #
 ###########################################################
 
+# Create gvcf files with HaplotypeCaller
+jid9=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --dependency=afterok:${jid11##* } --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/make-gvcf/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
 
 ###########################################################
 #                         OUTPUT                          #
