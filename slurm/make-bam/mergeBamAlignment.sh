@@ -2,16 +2,17 @@
 
 #! sbatch directives begin here ###############################
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
+#SBATCH --ntasks=4
 #SBATCH --time 12:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
-#SBATCH -p skylake-himem
+#SBATCH -p cclake-himem
+#SBATCH --mem=25000
 
 #SBATCH -o logs/mergeBam_%A-%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge                                # Removes all modules still loaded
-module load rhel7/default-peta4             # REQUIRED - loads the basic environment
+module purge
+module load rhel7/default-ccl
 
 
 SAMPLE=$1
@@ -28,7 +29,7 @@ PG_PN=$(samtools view -H ${DIR}/${SAMPLE}.L${LANE}.aligned.bam | grep '@PG' | gr
 PG_VN=$(samtools view -H ${DIR}/${SAMPLE}.L${LANE}.aligned.bam | grep '@PG' | grep 'ID:bwa' | cut -f 4 | sed 's/VN://')
 PG_CL=$(samtools view -H ${DIR}/${SAMPLE}.L${LANE}.aligned.bam | grep '@PG' | grep 'ID:bwa' | cut -f 5 | sed 's/CL://')
 
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MergeBamAlignment \
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx24G" MergeBamAlignment \
   --REFERENCE_SEQUENCE ${FASTA}/${GENOME}.fasta \
   --UNMAPPED_BAM ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam \
   --ALIGNED_BAM ${DIR}/${SAMPLE}.L${LANE}.aligned.bam \

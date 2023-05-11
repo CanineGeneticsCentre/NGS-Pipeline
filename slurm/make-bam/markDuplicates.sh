@@ -2,16 +2,17 @@
 
 #! sbatch directives begin here ###############################
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
+#SBATCH --ntasks=2
 #SBATCH --time 06:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
-#SBATCH -p skylake-himem
+#SBATCH -p cclake-himem
+#SBATCH --mem=12000
 
 #SBATCH -o logs/mark-duplicates_%j.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge                                # Removes all modules still loaded
-module load rhel7/default-peta4             # REQUIRED - loads the basic environment
+module purge
+module load rhel7/default-ccl
 
 
 SAMPLE=$1

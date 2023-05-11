@@ -5,13 +5,13 @@
 #SBATCH --ntasks=16
 #SBATCH --time 08:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
-#SBATCH -p icelake
+#SBATCH -p cclake
 
 #SBATCH -o logs/alignFastq_%A-%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge
-module load rhel8/default-icl
+module load rhel7/default-ccl
 
 
 SAMPLE=$1

@@ -2,23 +2,24 @@
 
 #! sbatch directives begin here ###############################
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
+#SBATCH --ntasks=4
 #SBATCH --time 12:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
-#SBATCH -p skylake-himem
+#SBATCH -p cclake-himem
+#SBATCH --mem=25000
 
 #SBATCH -o logs/sort-bam_%j.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge                                # Removes all modules still loaded
-module load rhel7/default-peta4             # REQUIRED - loads the basic environment
+module purge
+module load rhel7/default-ccl
 
 SAMPLE=$1
 source  ${SAMPLE}.config
 
 module load $GATK
 
-gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" SortSam  \
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx24G" SortSam  \
   --INPUT ${SAMPLE}.aligned.unsorted.dedup.bam \
   --OUTPUT ${SAMPLE}.sorted.bam \
   --CREATE_INDEX true \

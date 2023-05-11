@@ -5,13 +5,13 @@
 #SBATCH --ntasks=1
 #SBATCH --time 04:00:00
 #SBATCH --mail-type=BEGIN,FAIL,INVALID_DEPEND,END
-#SBATCH -p skylake
+#SBATCH -p cclake-himem
 
 #SBATCH -o logs/mark-adapters_%A-%a.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge                                # Removes all modules still loaded
-module load rhel7/default-peta4             # REQUIRED - loads the basic environment
+module purge
+module load rhel7/default-ccl
 
 
 SAMPLE=$1
