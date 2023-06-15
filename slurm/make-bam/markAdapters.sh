@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 04:00:00
-#SBATCH --mail-type=BEGIN,FAIL,INVALID_DEPEND,END
+#SBATCH --mail-type=FAIL
 #SBATCH -p cclake-himem
 
 #SBATCH -o logs/mark-adapters_%A-%a.out

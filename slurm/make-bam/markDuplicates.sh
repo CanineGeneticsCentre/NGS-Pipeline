@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
 #SBATCH --time 06:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL
 #SBATCH -p cclake-himem
 #SBATCH --mem=12000
 
@@ -41,7 +41,7 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MarkDuplica
 output_size=$(stat -c%s "${SAMPLE}.aligned.unsorted.dedup.bam")
 if [ output_size > input_size ]; then
   for LANE in `seq 1 ${LANES}`; do 
-    mv lane${LANE}/${SAMPLE}.L${LANE}.merged.bam tmp_files
+    rm -rf lane${LANE}/${SAMPLE}.L${LANE}.merged.bam
     rm -rf lane${LANE}
   done
 fi

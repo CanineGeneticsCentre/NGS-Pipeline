@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 04:00:00
-#SBATCH --mail-type=FAIL,INVALID_DEPEND,END
+#SBATCH --mail-type=FAIL,END
 #SBATCH -p cclake
 
 #SBATCH -o logs/bqsrMerge-%j.out
@@ -45,5 +45,6 @@ input_size=$(stat -c%s "${SAMPLE}.sorted.bam")
 output_size=$(stat -c%s "${SAMPLE}-${REF}.bam")
 if [ output_size > input_size ]; then
   rm -rf base_recal;
-  mv ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.bsqr.out tmp_files/
+  rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.bsqr.out
+  #mv ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.bsqr.out tmp_files/
 fi

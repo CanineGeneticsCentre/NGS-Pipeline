@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 04:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL
 #SBATCH -p cclake-himem
 
 #SBATCH -o logs/sam2fastq_%A-%a.out
@@ -39,7 +39,8 @@ FILES=(../*.s_${LANE}.*fq.gz)
 ((input_size = $(stat -c%s ${FILES[0]}) + $(stat -c%s ${FILES[1]})))
 output_size=$(stat -c%s "${DIR}/${SAMPLE}.L${LANE}.fastq.gz")
 if [ output_size > input_size ]; then
-  mv ${DIR}/${SAMPLE}.L${LANE}.adaptMarked.bam tmp_files/
+  rm -rf ${DIR}/${SAMPLE}.L${LANE}.adaptMarked.bam
+  #mv ${DIR}/${SAMPLE}.L${LANE}.adaptMarked.bam tmp_files/
 else
   exit 1;
 fi

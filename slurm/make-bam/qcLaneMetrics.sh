@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 01:00:00
-#SBATCH --mail-type=END,FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL
 #SBATCH -p cclake
 
 #SBATCH -o logs/qc-Lane_%A-%a.out

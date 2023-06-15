@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
 #SBATCH --time 12:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL
 #SBATCH -p cclake-himem
 #SBATCH --mem=25000
 
@@ -61,7 +61,8 @@ input_size=$(stat -c%s "${DIR}/${SAMPLE}.L${LANE}.unaligned.bam")
 output_size=$(stat -c%s "${DIR}/${SAMPLE}.L${LANE}.merged.bam")
 
 if [ output_size > input_size ]; then
-  mv ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam ${DIR}/${SAMPLE}.L${LANE}.aligned.bam ${DIR}/${SAMPLE}.L${LANE}.fastq.gz tmp_files/
+  rm -rf ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam ${DIR}/${SAMPLE}.L${LANE}.aligned.bam ${DIR}/${SAMPLE}.L${LANE}.fastq.gz
+  #mv ${DIR}/${SAMPLE}.L${LANE}.unaligned.bam ${DIR}/${SAMPLE}.L${LANE}.aligned.bam ${DIR}/${SAMPLE}.L${LANE}.fastq.gz tmp_files/
 else
   exit 1;
 fi

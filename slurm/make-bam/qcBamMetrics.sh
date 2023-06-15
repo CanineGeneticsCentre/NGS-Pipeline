@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 12:00:00
-#SBATCH --mail-type=FAIL,INVALID_DEPEND,END
+#SBATCH --mail-type=FAIL,END
 #SBATCH -p cclake
 
 #SBATCH -o logs/bamMetrics-%j.out

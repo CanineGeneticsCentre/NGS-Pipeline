@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 02:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
+#SBATCH --mail-type=BEGIN,FAIL
 #SBATCH -p cclake-himem
 
 #SBATCH -o logs/fastq2sam_%A-%a.out

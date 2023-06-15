@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 06:00:00
-#SBATCH --mail-type=FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL
 ##SBATCH --no-requeue
 #SBATCH -p cclake
 
@@ -31,7 +31,6 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx4G" HaplotypeCal
   -I ${SAMPLE}-${REF}.bam \
   -L intervals/${n}-scattered.interval_list \
   -O gvcf/${SAMPLE}-${REF}.${n}.g.vcf \
-  -contamination 
   -GQB 10 -GQB 20 -GQB 30 -GQB 40 -GQB 50 -GQB 60 -GQB 70 -GQB 80 -GQB 90 \
   -ERC GVCF \
   -G StandardAnnotation -G StandardHCAnnotation -G AS_StandardAnnotation \

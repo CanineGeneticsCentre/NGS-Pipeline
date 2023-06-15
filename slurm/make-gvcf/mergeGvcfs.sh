@@ -6,11 +6,11 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 06:00:00
-#SBATCH --mail-type=FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL,END
 ##SBATCH --no-requeue
 #SBATCH -p cclake
 
-#SBATCH -o logs/gvcfMerge-%A_%a.out
+#SBATCH -o logs/gvcfMerge-%j.out
 
 . /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
 module purge
@@ -23,9 +23,14 @@ source ${SAMPLE}.config
 module load ${GATK}
 
 GVCFS=""
-for i in `seq 0 $(($INTERVALS-1))`; do n=$(printf "%04d" $i); GVCFS+="--variant gvcf/${SAMPLE}-${REF}.$n.g.vcf "; done
+for i in `seq 0 $(($INTERVALS-1))`; do n=$(printf "%04d" $i); GVCFS+="--INPUT gvcf/${SAMPLE}-${REF}.$n.g.vcf "; done
 
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx3G" MergeVcfs \
   ${GVCFS} \
   -O ${SAMPLE}-${REF}.g.vcf.gz
+
+gvcf_size=$(wc -c < ${SAMPLE}-${REF}.g.vcf.gz)
+if [ $gvcf_size -ge 1000000 ]; then
+  rm -rf gvcf
+fi

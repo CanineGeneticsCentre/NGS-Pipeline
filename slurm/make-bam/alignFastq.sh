@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=16
 #SBATCH --time 08:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
+#SBATCH --mail-type=BEGIN,FAIL
 #SBATCH -p cclake
 
 #SBATCH -o logs/alignFastq_%A-%a.out

@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
 #SBATCH --time 12:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL,END
 #SBATCH -p cclake-himem
 #SBATCH --mem=25000
 
@@ -34,7 +34,8 @@ else
   input_size=$(stat -c%s "${SAMPLE}.aligned.unsorted.dedup.bam")
   output_size=$(stat -c%s "${SAMPLE}.sorted.bam")
   if [ output_size > input_size ]; then
-    mv ${SAMPLE}.aligned.unsorted.dedup.bam tmp_files/
+    #mv ${SAMPLE}.aligned.unsorted.dedup.bam tmp_files/
+    rm -rf ${SAMPLE}.aligned.unsorted.dedup.bam
   else
     exit 1;
   fi

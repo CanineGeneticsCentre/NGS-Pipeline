@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --time 00:30:00
-#SBATCH --mail-type=FAIL,INVALID_DEPEND
+#SBATCH --mail-type=FAIL
 ##SBATCH --no-requeue
 #SBATCH -p cclake
 
