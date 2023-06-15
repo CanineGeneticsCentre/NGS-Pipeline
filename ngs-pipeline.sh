@@ -45,7 +45,7 @@ mkdir -p $GENOME;
 mv ${SAMPLE}-${REF}.config $GENOME/${SAMPLE}.config
 cd $GENOME
 
-mkdir metrics logs tmp_files intervals base_recal gvcf
+mkdir metrics logs intervals base_recal gvcf
 
 module load ${GATK}
 gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS} -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
