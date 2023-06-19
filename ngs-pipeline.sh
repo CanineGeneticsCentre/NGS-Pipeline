@@ -47,6 +47,9 @@ cd $GENOME
 
 mkdir metrics logs intervals base_recal gvcf
 
+# count raw reads
+sbatch -A ${ACCOUNT} -J ${SAMPLE}.countReads ${SCRIPTS}/slurm/countRawReads.sh ${SAMPLE}
+
 module load ${GATK}
 gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS} -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
 
