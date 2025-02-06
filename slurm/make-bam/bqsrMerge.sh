@@ -5,20 +5,19 @@
 #! sbatch directives begin here ###############################
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --time 04:00:00
+#SBATCH --time 12:00:00
 #SBATCH --mail-type=FAIL,END
 #SBATCH -p cclake
 
 #SBATCH -o logs/bqsrMerge-%j.out
 
-. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge
-module load rhel7/default-ccl
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load rhel8/default-ccl              # REQUIRED - loads the basic environment
 
 
 SAMPLE=$1
-INTERVALS=$2
-REF=$3
+REF=$2
 source ${SAMPLE}.config
 
 module load ${GATK}
@@ -43,7 +42,7 @@ fi
 
 input_size=$(stat -c%s "${SAMPLE}.sorted.bam")
 output_size=$(stat -c%s "${SAMPLE}-${REF}.bam")
-if [ output_size > input_size ]; then
+if [ $output_size -gt $input_size ]; then
   rm -rf base_recal;
   rm -rf ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.bsqr.out
   #mv ${SAMPLE}.sorted.bam ${SAMPLE}.sorted.bai ${SAMPLE}.bsqr.out tmp_files/

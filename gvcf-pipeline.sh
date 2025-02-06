@@ -13,12 +13,14 @@ CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 
 date
 
-mkdir -p $SAMPLE/logs; cd $SAMPLE
-cp $CFG $SAMPLE.config; source $SAMPLE.config
-mkdir -p $GENOME; 
-mv $SAMPLE.config $GENOME/
+cd $SAMPLE
+cp $CFG ${SAMPLE}-${REF}.config; source ${SAMPLE}-${REF}.config
 
+mkdir -p $GENOME; 
+mv ${SAMPLE}-${REF}.config $GENOME/${SAMPLE}.config
 cd $GENOME
+
+mkdir metrics logs intervals gvcf
 
 #PCR_FREE=false;
 PCR_MODEL='CONSERVATIVE';
@@ -42,15 +44,31 @@ rsync --progress -av ${WGS}/${SAMPLE}/${SAMPLE}-${REF}.ba* ./
 #perl ${SCRIPTS}/perl/createSeqGroups.pl ${DICT}
 #INTERVALS=`wc -l sequence_grouping.txt | awk '{print $1}'`
 
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
+module load ${GATK}
+gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS} -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
 
-mkdir intervals
-gatk SplitIntervals -R ${FASTA}/${GENOME}.fasta -L ${INTERVAL_LIST} --scatter-count ${INTERVALS}  -O intervals --subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION
+#BALANCING_WITHOUT_INTERVAL_SUBDIVISION means that --scatter-count is the upper limit for count of intervals
+#Need to reassign INTERVALS to the number actually generated
+INTERVALS=`ls intervals | wc -l`
+sed -i s/INTERVALS=50/INTERVALS=${INTERVALS}/ ${SAMPLE}.config
 
 # Create gvcf files with HaplotypeCaller
-jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
+jid1=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.HC --array=0-$(($INTERVALS-1)) ${SCRIPTS}/slurm/make-gvcf/haplotypeCaller.sh ${SAMPLE} ${REF} ${PCR_MODEL})
 
 # Merge gVCF files into single gVCF
-jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/combineGvcf.sh ${SAMPLE} ${INTERVALS} ${REF})
+jid2=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.GVCF --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/make-gvcf/mergeGvcfs.sh ${SAMPLE})
 
 echo $jid2
+
+###########################################################
+#                     VCF Files/Stats                     #
+###########################################################
+
+# Convert gVCF file to VCF
+jid3=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.VCF --dependency=afterok:${jid2##* } ${SCRIPTS}/slurm/gvcf2vcf.sh ${SAMPLE} ${REF})
+
+# Filter VCF and split into snps/indels
+jid4=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.filterVCF --dependency=afterok:${jid3##* } ${SCRIPTS}/slurm/filterVcf.sh ${SAMPLE} ${REF})
+
+# Output VCF stats
+tmp=$(sbatch -A ${ACCOUNT} -J ${SAMPLE}.VCFstats --dependency=afterok:${jid4##* } ${SCRIPTS}/slurm/vcfStats.sh ${SAMPLE} ${REF})

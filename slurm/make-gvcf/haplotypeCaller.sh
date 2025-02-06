@@ -5,16 +5,16 @@
 #! sbatch directives begin here ###############################
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --time 06:00:00
+#SBATCH --time 12:00:00
 #SBATCH --mail-type=FAIL
 ##SBATCH --no-requeue
 #SBATCH -p cclake
 
 #SBATCH -o logs/haplotypeCaller-%A_%a.out
 
-. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge
-module load rhel7/default-ccl
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load rhel8/default-ccl              # REQUIRED - loads the basic environment
 
 
 SAMPLE=$1

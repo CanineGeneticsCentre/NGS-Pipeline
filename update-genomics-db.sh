@@ -1,42 +1,32 @@
 #!/usr/bin/env bash
 
-#! RUN : bash genomics-db.sh <SAMPLE> <REF> [<CHR>]
-#! Eg. : bash genomics-db.sh samples.list cf4 [38]
+#! RUN : bash update-genomics-db.sh <SAMPLE> <REF> [<CHR>]
+#! Eg. : bash update-genomics-db.sh samples.list cf4 [38]
 
-SAMPLE_LIST=$1
+SAMPLE_MAP=$1
 REF=$2
-CHR=$3
 SCRIPTS=`dirname $0`
 CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 
-[[ -z "$SAMPLE_LIST" ]] && { echo "ERROR: No list of SAMPLES provided for this run"; exit 1; }
+[[ -z "$SAMPLE_MAP" ]] && { echo "ERROR: No SAMPLE map provided for this run"; exit 1; }
 [[ -z "$REF" ]] && { echo "ERROR: No REFERENCE provided for this run"; exit 1; }
 
-#DIR='67c7afff2f'; cd $DIR; source ${REF}.config
-#DIR=`echo $RANDOM | md5sum | head -c 10`
-DIR=$(basename $SAMPLE_LIST .list)
+
+DIR=$(basename $SAMPLE_MAP .map)
 echo "Creating directory ${DIR}"
-mkdir -p $DIR/logs; cd $DIR
-cp ../${SAMPLE_LIST} .
+mkdir $DIR; cd $DIR
+mkdir logs gvcf
+
+cp ../${SAMPLE_MAP} .
 cp $CFG ${REF}.config; source ${REF}.config
 
+#Get total number of folder we will be making - one per CHR (gdb-chromsomes.intervals) plus a number for the scaffolds (gdb-scaffolds.intervals)
+####INTERVALS=`cat ${FASTA}/intervals/gdb*.intervals | wc -l`
+INTERVALS=1
 
-for s in `cat ${SAMPLE_LIST}`; do
+for s in `cat ${SAMPLE_MAP}| cut -f 1`; do
   # Copy g.vcf files from RCS... will only copy if files no present or rcs version is newer
-  rsync --progress -av ${WGS}/${s}/${s}-${REF}.g.vcf* ./;
+  rsync --progress -av ${WGS}/${s}/${s}-${REF}.g.vcf* gvcf/;
 done
 
-
-# If chromosome is NOT set then use all lines in intervals list to scatter the update job
-if [ -z "$CHR" ]; then
-  INTERVALS=`wc -l ${FASTA}/${REF}-genomicsDB.intervals | awk '{print $1}'`
-  ARRAY="1-${INTERVALS}"
-else
-  MIN=`grep -n "^$CHR:" $FASTA/${REF}-genomicsDB.intervals | awk  -F':' ' { print $1 } ' | head -1`
-  MAX=`grep -n "^$CHR:" $FASTA/${REF}-genomicsDB.intervals | awk  -F':' ' { print $1 } ' | tail -1`
-  ARRAY="${MIN}-${MAX}"
-fi
-
-echo sbatch -A ${ACCOUNT} -J GenomicsDB --array=${ARRAY} ${SCRIPTS}/slurm/updateGenomicsDB.sh ${SAMPLE_LIST} ${REF}
-sbatch -A ${ACCOUNT} -J GenomicsDB --array=${ARRAY} ${SCRIPTS}/slurm/updateGenomicsDB.sh ${SAMPLE_LIST} ${REF}
-
+sbatch -A ${ACCOUNT} -J GenomicsDB.update --array=1-$INTERVALS ${SCRIPTS}/slurm/updateGenomicsDB.sh ${SAMPLE_MAP} ${REF}

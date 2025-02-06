@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 
-#! RUN : bash ngs-pipeline.sh <SAMPLE> 
-#! Eg. : bash ngs-pipeline.sh CS_35365
+#! RUN : bash ngs-pipeline.sh <SAMPLE> <REF>
+#! Eg. : bash ngs-pipeline.sh CS_35365 cf4
 
 SAMPLE=$1
+REF=$2
 SCRIPTS=`dirname $0`
-CFG="${SCRIPTS}/ngs-pipeline-cf3.config"
+CFG="${SCRIPTS}/ngs-pipeline-${REF}.config"
 
 [[ -z "$SAMPLE" ]] && { echo "ERROR: No SAMPLE provided for this run"; exit 1; }
 
 date
 
 mkdir -p $SAMPLE/logs; cd $SAMPLE
-cp $CFG $SAMPLE.config; source $SAMPLE.config
+#cp $CFG $SAMPLE.config; source $SAMPLE.config
 
 # Copy files from RCS... will only copy if files no present or rcs version is newer
 rsync --progress -av ${WGS}/${SAMPLE}/*.fastq.gz ./
@@ -25,7 +26,7 @@ LANES=$((COUNT / 2))
 if [ $LANES -le 2 ];then
   echo "Need to split FASTQ files"
   for f in `ls *.fastq.gz`; do 
-    echo sbatch -A ${ACCOUNT} -J splitFastq --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/splitFastq.sh ${SAMPLE} ${f}
-    sbatch -A ${ACCOUNT} -J splitFastq --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/splitFastq.sh ${SAMPLE} ${f}
+    #echo sbatch -A ${ACCOUNT} -J splitFastq --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/splitFastq.sh ${SAMPLE} ${f}
+    sbatch -J ${SAMPLE}.splitFastq --export=SCRIPTS=${SCRIPTS} ${SCRIPTS}/slurm/splitFastq.sh ${SAMPLE} ${f}
   done
 fi

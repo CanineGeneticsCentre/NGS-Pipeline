@@ -10,22 +10,22 @@
 
 #SBATCH -o logs/mark-duplicates_%j.out
 
-. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge
-module load rhel7/default-ccl
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load rhel8/default-ccl              # REQUIRED - loads the basic environment
 
 
 SAMPLE=$1
-LANES=$2
+READ_GROUPS=$2
 source ${SAMPLE}.config
 
 module load ${GATK}
 
 
 INPUT=''
-for LANE in `seq 1 ${LANES}`; do 
-  INPUT+=" --INPUT lane${LANE}/${SAMPLE}.L${LANE}.merged.bam"
-  ((input_size+=$(stat -c%s "lane${LANE}/${SAMPLE}.L${LANE}.merged.bam")))
+for RG in `seq 1 ${READ_GROUPS}`; do 
+  INPUT+=" --INPUT rg${RG}/${SAMPLE}.RG${RG}.merged.bam"
+  ((input_size+=$(stat -c%s "rg${RG}/${SAMPLE}.RG${RG}.merged.bam")))
 done
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MarkDuplicates ${INPUT} \
@@ -40,8 +40,8 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" MarkDuplica
 # If output file from MarkDuplicates is larger than the sum of the input files, DELETE input files
 output_size=$(stat -c%s "${SAMPLE}.aligned.unsorted.dedup.bam")
 if [ output_size > input_size ]; then
-  for LANE in `seq 1 ${LANES}`; do 
-    rm -rf lane${LANE}/${SAMPLE}.L${LANE}.merged.bam
-    rm -rf lane${LANE}
+  for RG in `seq 1 ${READ_GROUPS}`; do 
+    rm -rf rg${RG}/${SAMPLE}.RG${RG}.merged.bam
+    rm -rf rg${RG}
   done
 fi

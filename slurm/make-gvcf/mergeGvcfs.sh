@@ -12,9 +12,9 @@
 
 #SBATCH -o logs/gvcfMerge-%j.out
 
-. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge
-module load rhel7/default-ccl
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load rhel8/default-ccl              # REQUIRED - loads the basic environment
 
 
 SAMPLE=$1
@@ -34,3 +34,7 @@ gvcf_size=$(wc -c < ${SAMPLE}-${REF}.g.vcf.gz)
 if [ $gvcf_size -ge 1000000 ]; then
   rm -rf gvcf
 fi
+
+
+echo -e "gVCF\t"`date -r ${SAMPLE}-${REF}.g.vcf.gz +"%Y-%m-%d %H:%M:%S"` >> ${SAMPLE}-${REF}.stats
+#echo -e "dateCompleted\t"`date -r ${SAMPLE}-${REF}.g.vcf.gz +"%Y-%m-%d %H:%M:%S"` >> ${SAMPLE}-${REF}.stats

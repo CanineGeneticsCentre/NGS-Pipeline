@@ -1,34 +1,26 @@
 #!/usr/bin/env bash
 
-#! RUN : sbatch filterVcf.sh <REF>
+#! RUN : sbatch filterVcf.sh <SAMPLE> REF>
 
 #! sbatch directives begin here ###############################
-#! How many whole nodes should be allocated?
 #SBATCH --nodes=1
-#! How many (MPI) tasks will there be in total? (<= nodes*32)
-#! The skylake/skylake-himem nodes have 32 CPUs (cores) each.
-#SBATCH --ntasks=1
-#! How much wallclock time will be required?
+#SBATCH --ntasks=2
 #SBATCH --time 00:30:00
-#! What types of email messages do you wish to receive?
-#SBATCH --mail-type=FAIL,INVALID_DEPEND,END
-#! Uncomment this to prevent the job from being requeued (e.g. if
-#! interrupted by node failure or system downtime):
-##SBATCH --no-requeue
-#! For 6GB per CPU, set "-p skylake"; for 12GB per CPU, set "-p skylake-himem":
-#SBATCH -p skylake-himem
-#SBATCH --mem=10gb
+#SBATCH --mail-type=FAIL
+#SBATCH -p cclake-himem
+#SBATCH --mem=12000
 
-#SBATCH -o logs/job-%j.out
+#SBATCH -o logs/filterVCF_%j.out
 
-. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge                                # Removes all modules still loaded
-module load rhel7/default-peta4             # REQUIRED - loads the basic environment
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load rhel8/default-ccl              # REQUIRED - loads the basic environment
 
-module load gatk-4.2.5.0-gcc-5.4.0-hzdcjga
-module load bcftools-1.9-gcc-5.4.0-b2hdt5n
+SAMPLE=$1
+REF=$2
+source ${SAMPLE}.config
 
-source ${REF}.config
+module load ${GATK}
 
 gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFiltration \
     -R ${FASTA}/${GENOME}.fasta \
@@ -37,8 +29,7 @@ gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx10G" VariantFilt
     --filter-name "basic" \
     -O ${SAMPLE}-${REF}.filtered.vcf.gz
 
-bcftools view -v indels ${SAMPLE}-${REF}.filtered.vcf.gz | bcftools annotate -x INFO,^FORMAT/GT,FORMAT/AD,FORMAT/DP,FORMAT/GQ,FORMAT/PL -Oz -o ${SAMPLE}-${REF}.indels.vcf.gz
-bcftools view -v snps ${SAMPLE}-${REF}.filtered.vcf.gz | bcftools annotate -x INFO,^FORMAT/GT,FORMAT/AD,FORMAT/DP,FORMAT/GQ,FORMAT/PL -Oz -o ${SAMPLE}-${REF}.snps.vcf.gz
+${BCFTOOLS} view -v indels ${SAMPLE}-${REF}.filtered.vcf.gz | bcftools annotate -x INFO,^FORMAT/GT,FORMAT/AD,FORMAT/DP,FORMAT/GQ,FORMAT/PL -Oz -o ${SAMPLE}-${REF}.indels.vcf.gz
+${BCFTOOLS} view -v snps ${SAMPLE}-${REF}.filtered.vcf.gz | bcftools annotate -x INFO,^FORMAT/GT,FORMAT/AD,FORMAT/DP,FORMAT/GQ,FORMAT/PL -Oz -o ${SAMPLE}-${REF}.snps.vcf.gz
 
-
-#rm -rf ${CHR}/${REF}-${CHR}-${ID}.vcf.gz ${CHR}/${REF}-${CHR}-${ID}.vcf.gz.tbi
+echo -e "VCF\t"`date -r ${SAMPLE}-${REF}.filtered.vcf.gz +"%Y-%m-%d %H:%M:%S"` >> ${SAMPLE}-${REF}.stats

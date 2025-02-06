@@ -16,27 +16,26 @@
 #! interrupted by node failure or system downtime):
 ##SBATCH --no-requeue
 #! For 6GB per CPU, set "-p skylake"; for 12GB per CPU, set "-p skylake-himem":
-#SBATCH -p skylake
+#SBATCH -p cclake
 
 #SBATCH -o logs/job-%j.out
 
-. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
-module purge                                # Removes all modules still loaded
-module load rhel7/default-peta4             # REQUIRED - loads the basic environment
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load rhel8/default-ccl              # REQUIRED - loads the basic environment
 
 SAMPLE=$1
 FILE=$2
 
 DIR="${FILE%%.*}"
 
-source ${SAMPLE}.config
+#source ${SAMPLE}.config
 
 mkdir $DIR
 cd $DIR
 
 #split $f into chunks of approx 5000,000,000 lines
 zcat ../$FILE | split -l500000000 --additional-suffix=.fq
-#rm -rf ../$FILE
 
 ls -1 x*.fq > files.list
 FQ=`wc -l files.list | cut -f1 -d ' '`
@@ -44,6 +43,6 @@ FQ=`wc -l files.list | cut -f1 -d ' '`
 cat files.list
 
 #echo sbatch -A ${ACCOUNT} -J renameFastq --array=1-${FQ} --export=SAMPLE=${SAMPLE} ${SCRIPTS}/slurm/renameFastq.sh ${DIR}
-sbatch -A ${ACCOUNT} -J renameFastq --array=1-${FQ} --export=SAMPLE=${SAMPLE} ${SCRIPTS}/slurm/renameFastq.sh ${DIR} 
+sbatch -J ${SAMPLE}.renameFastq --array=1-${FQ} --export=SAMPLE=${SAMPLE} ${SCRIPTS}/slurm/renameFastq.sh ${DIR} 
 
 cd ../
