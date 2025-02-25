@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+#SBATCH -A MELLERSH-SL3-CPU
+#SBATCH --output=/home/%u/hpc-work/logs/job-%j.out
+#SBATCH --error=/home/%u/hpc-work/logs/job-%j.err
+#SBATCH -p cclake-himem
+#SBATCH --time=12:00:00
+#SBATCH --job-name=export-vcf.job
+#SBATCH --mail-type=ALL
+#SBATCH --ntasks 1 
+#SBATCH --cpus-per-task 4   ## hopefully gives me 4 cores on the same node, therefore 4 x 6840MB of RAM... (maybe!)
+
+. /etc/profile.d/modules.sh                 # Leave this line (enables the module command)
+module purge                                # Removes all modules still loaded
+module load rhel7/default-peta4             # REQUIRED - loads the basic environment
+
+REF=$1
+source ${REF}.config
+
+module load ${GATK}
+
+gatk --java-options "-Djava.io.tmpdir=${HOME}/hpc-work/tmp/ -Xmx25G" GenotypeGVCFs \
+  -R ${FASTA}/${GENOME}.fasta \
+  --tmp-dir ${HOME}/hpc-work/tmp/ \
+  -V gendb:///rds/project/rds-xQ6dHpTPZ0M/cf4-chr30/ \
+  -O cf4-chr30.vcf.gz

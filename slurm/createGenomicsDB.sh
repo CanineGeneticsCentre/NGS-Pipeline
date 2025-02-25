@@ -5,7 +5,7 @@
 #! sbatch directives begin here ###############################
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task 4   ## hopefully gives me 4 cores on the same node, therefore 4 x 6840MB of RAM... (maybe!)
-#SBATCH --time 08:00:00
+#SBATCH --time 20:00:00
 #SBATCH --mail-type=ALL
 #SBATCH -p cclake-himem
 
